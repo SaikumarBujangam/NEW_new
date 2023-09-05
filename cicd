@@ -1,58 +1,115 @@
-module "efs_cicd" {
-  source                     = "git::codecommit://module-aws-efs?ref=v2"
-  #source                     = "git::codecommit://module-aws-efs?ref=AWS-16985"
-  #source                     = "../module-aws-efs"
-  application                = "devops"
-  service                    = "cicd"
-  environment                = "dv"
-  ingress_security_group_ids = [aws_security_group.efs_sg.id]
-  vpc_group                  = var.vpc_group
-  vpc_tier                   = var.vpc_tier
-  tags                       = {}
-  access_points              = [
-    { 
-      path: "/working-dir", 
-      uid: 1001, 
-      gid: 1001, 
-      permissions: 755
-    }
-  ]
+terraform {
+  experiments = [module_variable_optional_attrs]
 }
 
-# resource "aws_efs_access_point" "cicd_access_point" {
-#   file_system_id = module.efs_cicd.id
-#   root_directory = {
-#     creation_info = {
-#       uid: 1001, 
-#       gid: 1001, 
-#       permissions: 755
-#     }
-#     path = "/working-dir"
-#   }
-# }
+module "kms" {
+  source = "git::codecommit://module-aws-kms?ref=v1"
+  kms_key_alias = var.kms_key_alias
+}
 
-
+module "network" {
+  source = "git::codecommit://module-aws-network-data?ref=v2"
+  vpc_group = var.vpc_group
+  vpc_tier  = var.vpc_tier
+}
 
 locals {
-  efs_sg_name = "${var.application}-${var.service}-${var.environment}-efs-sg"
+  efs_name     = var.service != null ? "${var.application}-${var.service}-${var.environment}-efs" : "${var.application}-${var.environment}-efs"
+  BackupName   = var.backup_name != "" ? var.backup_name : "${local.efs_name}-backup"
 }
 
-resource "aws_security_group" "efs_sg" {
-  name        = local.efs_sg_name
-  description = "SG to control access to the EFS mount(s) used by the CICD tasks."
-  vpc_id      = module.network.vpc_id
+resource "aws_efs_file_system" "efs" {
+  creation_token  = local.efs_name
+  encrypted       = true
+  kms_key_id      = var.kms_key_arn == "" ? module.kms.kms_key_arn : var.kms_key_arn
+  throughput_mode = "bursting"
+  tags            = merge(var.tags, { Name = local.efs_name, BackupPlan = var.backup_plan, BackupName = var.backup_name != "" ? var.backup_name : local.BackupName }) 
+ 
+}
 
-  tags = {
-    Name = local.efs_sg_name
+resource "aws_efs_backup_policy" "policy" {
+  file_system_id = aws_efs_file_system.efs.id
+  backup_policy {
+    status = var.backup_plan != "" && var.backup_plan != "none" ? "ENABLED" : "DISABLED"
   }
-} 
+}
 
-resource "aws_security_group_rule" "sg_ingress_EFS" {
+resource "aws_efs_access_point" "efs_access_point" {
+  count          = length(var.access_points)
+  file_system_id = aws_efs_file_system.efs.id
+  posix_user {
+    gid = var.access_points[count.index].gid != null ? var.access_points[count.index].gid : 0
+    uid = var.access_points[count.index].uid != null ? var.access_points[count.index].uid : 0
+  }
+  root_directory {
+    path = var.access_points[count.index].path
+
+    creation_info {
+      owner_gid   = var.access_points[count.index].gid != null ? var.access_points[count.index].gid : 0
+      owner_uid   = var.access_points[count.index].uid != null ? var.access_points[count.index].uid : 0
+      permissions = var.access_points[count.index].permissions != null ? var.access_points[count.index].permissions : 755
+    }
+  }
+}
+
+resource "aws_efs_mount_target" "mount_target" {
+  count           = length(module.network.subnet_class_map[var.subnet_type])
+  file_system_id  = aws_efs_file_system.efs.id
+  subnet_id       = module.network.subnet_class_map[var.subnet_type][count.index]
+  security_groups = [aws_security_group.efs.id]
+
+  depends_on = [aws_security_group.efs]
+}
+
+resource "aws_security_group" "efs" {
+  name   = local.efs_name
+  vpc_id = module.network.vpc_id
+}
+
+resource "aws_security_group_rule" "ingress_to_ec2" {
+  count                    = length(var.ingress_security_group_ids)
+  from_port                = 2049
+  protocol                 = "TCP"
+  security_group_id        = aws_security_group.efs.id
+  to_port                  = 2049
+  type                     = "ingress"
+  source_security_group_id = var.ingress_security_group_ids[count.index]
+}
+
+resource "aws_security_group_rule" "egress_from_ec2" {
+  count                    = length(var.ingress_security_group_ids)
+  from_port                = 2049
+  protocol                 = "TCP"
+  security_group_id        = var.ingress_security_group_ids[count.index]
+  to_port                  = 2049
+  type                     = "egress"
+  source_security_group_id = aws_security_group.efs.id
+}
+
+resource "aws_security_group_rule" "datasync_ingress_rule" {
+  count             = var.backup_plan != "" ? 1 : 0
   type              = "ingress"
-  description       = "Ingress NFS for EFS."
+  description       = "Ingress rule needed for DataSync tasks"
+  security_group_id = aws_security_group.efs.id
   from_port         = 2049
+  protocol          = "TCP"
   to_port           = 2049
-  protocol          = "tcp"
+  self              = true
+}
+
+resource "aws_security_group_rule" "datasync_egress_rule" {
+  count             = var.backup_plan != "" ? 1 : 0
+  type              = "egress"
+  description       = "Egress rule needed for DataSync tasks"
+  security_group_id = aws_security_group.efs.id
+  from_port         = 2049
+  protocol          = "TCP"
+  to_port           = 2049
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.efs_sg.id
+}
+
+data "aws_efs_access_points" "access_point_objects" {
+  count = length(var.access_points) > 0 ? 1 : 0
+  file_system_id = aws_efs_file_system.efs.id
+  depends_on = [ aws_efs_access_point.efs_access_point ]
 }
