@@ -1,0 +1,58 @@
+module "efs_cicd" {
+  source                     = "git::codecommit://module-aws-efs?ref=v2"
+  #source                     = "git::codecommit://module-aws-efs?ref=AWS-16985"
+  #source                     = "../module-aws-efs"
+  application                = "devops"
+  service                    = "cicd"
+  environment                = "dv"
+  ingress_security_group_ids = [aws_security_group.efs_sg.id]
+  vpc_group                  = var.vpc_group
+  vpc_tier                   = var.vpc_tier
+  tags                       = {}
+  access_points              = [
+    { 
+      path: "/working-dir", 
+      uid: 1001, 
+      gid: 1001, 
+      permissions: 755
+    }
+  ]
+}
+
+# resource "aws_efs_access_point" "cicd_access_point" {
+#   file_system_id = module.efs_cicd.id
+#   root_directory = {
+#     creation_info = {
+#       uid: 1001, 
+#       gid: 1001, 
+#       permissions: 755
+#     }
+#     path = "/working-dir"
+#   }
+# }
+
+
+
+locals {
+  efs_sg_name = "${var.application}-${var.service}-${var.environment}-efs-sg"
+}
+
+resource "aws_security_group" "efs_sg" {
+  name        = local.efs_sg_name
+  description = "SG to control access to the EFS mount(s) used by the CICD tasks."
+  vpc_id      = module.network.vpc_id
+
+  tags = {
+    Name = local.efs_sg_name
+  }
+} 
+
+resource "aws_security_group_rule" "sg_ingress_EFS" {
+  type              = "ingress"
+  description       = "Ingress NFS for EFS."
+  from_port         = 2049
+  to_port           = 2049
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.efs_sg.id
+}
