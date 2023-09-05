@@ -1,10 +1,1 @@
-module "s3" {
-  source = "git::codecommit://module-aws-s3?ref=v2"
-  application = var.application
-  service = var.service
-  environment = var.environment
-  is_production = var.is_production
-  # We need to add the data source name for the IAM Policy document  
-  #bucket_policy = data.aws_iam_policy_document.example.json
-  tags = {} 
-}
+4.	Technical Expertise: Please work on upscaling you in DevOps area & technology. 
