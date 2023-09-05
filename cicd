@@ -1,37 +1,10 @@
-module "lambda-get-source-code" {
-    application         = var.application
-    environment         = var.environment
-    service             = var.service
-    source              = "git::codecommit://module-aws-lambda?ref=v1"
-    /* source              = "git::codecommit://module-aws-lambda?ref=AWS-16658" */
-    function_name       = "get-source-code"
-    description         = "Clones a single Bitbucket repository that contains the source code to be built."
-    handler             = "app.lambdaHandler"
-    runtime             = "nodejs14.x"
-    vpc_group           = var.vpc_group
-    vpc_tier            = var.vpc_tier
-    security_group_ids  = [aws_security_group.lambda-get-source-code_sg.id]
-    tags = {}
-    lambda_env_variables = {
-      RUNTIME_VALUE  = "some-runtime"
-    }
-    timeout = 6
-    memory_size = 256
-    retention_in_days = 7
-    #file_system_arn = tolist(module.efs_cicd.efs_access_point_objects.arns)[0]
-    #file_system_local_mount_path = var.file_system_local_mount_path
-}
-
-locals {
-  lambda_get_source_code_sg_name = "${var.application}-${var.service}-${var.environment}-lambda-get-source-code-sg"
-}
-
-resource "aws_security_group" "lambda-get-source-code_sg" {
-  name        = local.lambda_get_source_code_sg_name
-  description = "SG to control access to/from the get-source-code lambda function."
-  vpc_id      = module.network.vpc_id
-
-  tags = {
-    Name = local.lambda_get_source_code_sg_name
-  }
+module "s3" {
+  source = "git::codecommit://module-aws-s3?ref=v2"
+  application = var.application
+  service = var.service
+  environment = var.environment
+  is_production = var.is_production
+  # We need to add the data source name for the IAM Policy document  
+  #bucket_policy = data.aws_iam_policy_document.example.json
+  tags = {} 
 }
