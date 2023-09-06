@@ -1,1 +1,12 @@
-Specifically, I have asked about the possibility of obtaining support or reimbursement for the Kubernetes certification. Given its relevance to our project, I believe that this certification would be a valuable asset, and I am committed to pursuing it.
+{
+  "source": ["aws.s3"],
+  "detail-type": ["AWS API Call via CloudTrail"],
+  "detail": {
+    "eventSource": ["s3.amazonaws.com"],
+    "eventName": ["PutObject", "CompleteMultipartUpload", "CopyObject"],
+    "requestParameters": {
+      "bucketName": ["${source_s3_bucket}"],
+      "key": ["${key}"]
+    }
+  }
+}
