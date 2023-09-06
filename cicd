@@ -1,321 +1,160 @@
 
-########### CodePipeline Role #####################################
-data "aws_iam_policy_document" "codepipeline_assume_role_policy" {
-  statement {
-    effect  = "Allow"
-    actions = ["sts:AssumeRole"]
+module "adl_globals" {
+  source = "../../modules/module-adl-global"
 
-    principals {
-      type        = "Service"
-      identifiers = ["codepipeline.amazonaws.com","codebuild.amazonaws.com","iam.amazonaws.com","codedeploy.amazonaws.com"]
-    }
+  application     = var.application
+  service         = var.service
+  environment     = var.environment
+  additional_tags = merge(var.tags, { "dataproduct" = var.service })
+}
+
+locals {
+  layer_names = {
+    codepipeline     = "codepipeline"
   }
 }
 
-resource "aws_iam_role" "codepipeline_role" {
-  name = format("%s-%s-%s-codepipeline-role", var.application, module.adl_globals.environment,var.codepipelinename)
-  path               = "/"
-  tags               = var.tags
-  assume_role_policy = data.aws_iam_policy_document.codepipeline_assume_role_policy.json
+
+
+#####################create s3 bucket#########################
+# module "s3_bucket_codepipeline" {
+#   source = "../../modules/module-adl-s3"
+#   application = var.application
+#   service     = "${var.service}-${local.layer_names.codepipeline}"
+#   environment = module.adl_globals.environment
+#   tags        = module.adl_globals.tags
+#   enable_versioning = true
+#   #kms_key_arn     = "arn:aws:kms:us-east-1:056994788717:key/6216a2ac-e111-4504-8b90-1aad693cd66f"
+# }
+
+data "aws_iam_role" "example" {
+  name = "TerraformOperations"
 }
 
-data "aws_iam_policy_document" "codepipeline_role_policy_document" {
+###################################################
+## Create CodePipeline for buildspec              ###
+###################################################
 
-  statement {
-      effect = "Allow"
-      actions = [
-          "kms:Encrypt",
-          "kms:Decrypt",
-          "kms:GenerateDataKey",
-          "kms:GenerateDataKey*"                
-        ]
-      resources = [
-        "arn:aws:kms:us-east-1:*:key/*"
-      ]
+resource "aws_s3_object" "default_folders" {
+  bucket = var.source_s3_bucket
+  key    = "cicd/codedeploy/${var.service}/${var.repo_name}/"
+}
+
+# Create the codepipeline for taking code from S3 or codecommit and build/deploying to corresponding module 
+resource "aws_codepipeline" "codepipeline" {
+  name = format("%s-%s-%s-codepipeline", var.application,module.adl_globals.environment, var.codepipelinename)
+  role_arn = aws_iam_role.codepipeline_role.arn
+  #role_arn = data.aws_iam_role.example.arn
+  artifact_store {
+    #location = module.s3_bucket_codepipeline.bucket_name
+    location = var.source_s3_bucket
+    type     = "S3"
+    encryption_key {
+      id = "arn:aws:kms:us-east-1:427130756745:key/eb560480-f7e5-4797-8023-b0935ad9b799"
+      type = "KMS"
+    }
   }
-    statement {
-      effect = "Allow"
-      actions = [
-        "s3:GetObject",
-        "s3:GetObjectVersion",
-        "s3:GetBucketVersioning",
-        "s3:PutObject",
-        "s3:ListBucketVersions",
-        "s3:GetObjectTagging",
-        "s3:ListBucket",
-        "s3:ListBucket",
-        "s3:GetBucketLocation",
-        "s3:GetObjectAcl",
-        "s3:PutObjectAcl",
-        "s3:DeleteObject",
-        "s3:GetBucketAcl",
-        "s3:PutBucketVersioning"
-        ]
+  stage {
 
-      resources = [
-        "arn:aws:s3:::*"
-      ]
-    }
-    statement {
-      effect = "Allow"
-      actions = [
-        "codebuild:*",
-        "codedeploy:*",
-        "s3:*"
-      ]
-      resources = [
-        "*"
-      ]
-    }
-    statement {
-            effect= "Allow"
-            actions= [
-                "autoscaling:AttachLoadBalancers",
-                "autoscaling:EnableMetricsCollection",
-                "ec2:TerminateInstances",
-                "autoscaling:ResumeProcesses",
-                "autoscaling:PutLifecycleHook",
-                "autoscaling:SuspendProcesses",
-                "autoscaling:PutScheduledUpdateGroupAction",
-                "autoscaling:AttachLoadBalancerTargetGroups",
-                "autoscaling:PutWarmPool",
-                "autoscaling:CompleteLifecycleAction",
-                "autoscaling:PutScalingPolicy",
-                "autoscaling:UpdateAutoScalingGroup",
-                "autoscaling:DeleteAutoScalingGroup",
-                "autoscaling:DeleteLifecycleHook",
-                "autoscaling:CreateAutoScalingGroup",
-                "autoscaling:PutNotificationConfiguration",
-                "autoscaling:RecordLifecycleActionHeartbeat"
-            ]
-            resources= [
-                "arn:aws:autoscaling:${module.adl_globals.current_region}:${module.adl_globals.account_id}:autoScalingGroup:*:autoScalingGroupName/*",
-                "arn:aws:ec2:${module.adl_globals.current_region}:${module.adl_globals.account_id}:instance/*"
-            ]
+      name = "Source"
+
+      action {
+        name     = "Source"
+        category = "Source"
+        owner    = "AWS"
+        provider = "S3"
+        version  = "1"
+
+        output_artifacts = ["SourceArtifact"]
+
+        configuration = {
+          S3Bucket             = var.source_s3_bucket
+          // build_code = deploy.zip
+          S3ObjectKey          = format("cicd/codedeploy/%s/%s/%s", var.service,var.repo_name,var.build_code)
+          PollForSourceChanges = false
         }
-      statement {
-            effect= "Allow"
-            actions = [
-                "ec2:DescribeInstances",
-                "autoscaling:DescribeScalingActivities",
-                "autoscaling:DescribeAutoScalingGroups",
-                "autoscaling:DescribePolicies",
-                "autoscaling:DescribeScheduledActions",
-                "autoscaling:DescribeNotificationConfigurations",
-                "autoscaling:DescribeLifecycleHooks",
-                "ec2:DescribeInstanceStatus"
-            ]
-            resources = ["*"]
+      }
+
+  }
+  stage {
+      name = "Deploy"
+      action {
+        name = "Deploy"
+        category        = "Deploy"
+        owner           = "AWS"
+        provider        = "CodeDeploy"
+        input_artifacts = ["SourceArtifact"]
+        version         = "1"
+
+        configuration = {
+          ApplicationName     = aws_codedeploy_app.codedeploy.name #format("%s-%s-%s-ec2deployment", var.application,module.adl_globals.environment,var.service)
+          DeploymentGroupName = aws_codedeploy_deployment_group.codedeploy_group.deployment_group_name
         }
+      }
+  }  
+
+  # stage {
+  #   name = "Archive"
+
+  #   action {
+  #     name = "Archive"
+  #     category        = "Deploy"
+  #     owner           = "AWS"
+  #     provider        = "S3" 
+  #     input_artifacts = ["SourceArtifact"]
+  #     version         = "1"
+
+  #     configuration = {
+  #       "ObjectKey" = format("%s/%s-%s.zip", "archive",var.build_code,local.timestamp_sanitized)
+  #       "BucketName" = var.pipeline_bucket_name
+  #       "Extract" = "false"
+  #     }
+  #   }
+  # }
+
+
+  tags = module.adl_globals.tags
 }
-    
-    
 
-
-
-resource "aws_iam_role_policy" "codepipeline_policy" {
-  name = format("%s-%s-%s-codepipeline-policy", var.application, module.adl_globals.environment,var.service)
-  role = aws_iam_role.codepipeline_role.id
-  policy = data.aws_iam_policy_document.codepipeline_role_policy_document.json
+########### Code Deploy #########
+resource "aws_codedeploy_app" "codedeploy" {
+  name = format("%s-%s-%s-ec2deploymentapp", var.application,module.adl_globals.environment,var.codepipelinename)
 }
 
 
-######################## CodeDeploy Role
+resource "aws_codedeploy_deployment_group" "codedeploy_group" {  
+  app_name              = aws_codedeploy_app.codedeploy.name
+  deployment_group_name = format("%s-%s-%s-ec2deploymentgroup", var.application,module.adl_globals.environment,var.codepipelinename) 
+  service_role_arn      = aws_iam_role.codepipeline_role.arn
+  deployment_config_name = aws_codedeploy_deployment_config.codedeploy_config.id
 
-# data "aws_iam_policy_document" "codebuild_assume_role_policy" {
-#   statement {
-#     effect  = "Allow"
-#     actions = ["sts:AssumeRole"]
+  dynamic "ec2_tag_set" {
+    for_each = var.ec2_filter_tags
+    content {
+      dynamic "ec2_tag_filter" {
+        for_each = ec2_tag_set.value
+        content {
+          key   = ec2_tag_filter.value.key
+          type  = ec2_tag_filter.value.type
+          value = ec2_tag_filter.value.value
 
-#     principals {
-#       type        = "Service"
-#       identifiers = ["codebuild.amazonaws.com","iam.amazonaws.com","codedeploy.amazonaws.com"]
-#     }
-#   }
-# }
-
-# resource "aws_iam_role" "cp_codedeploy_role" {
-#   name = format("%s-%s-%s-codedeploy-role", var.application, module.adl_globals.environment,var.codepipelinename)
-#   path = "/"
-#   tags = var.tags
-#   assume_role_policy = data.aws_iam_policy_document.codebuild_assume_role_policy.json
-# }
-
-# # resource "aws_iam_role_policy" "codedeploy_policy" {
-# #   name = format("%s-%s-%s-codepipeline-policy", var.application, module.adl_globals.environment,var.service)
-# #   role = aws_iam_role.codepipeline_role.id
-# #   policy = data.aws_iam_policy_document.codedeploy_role_policy_document.json
-# # }
-
-
-# # data "aws_iam_policy_document" "codedeploy_role_policy_document" {
-
-# #   statement {
-# #     effect = "Allow"
-# #     actions = [
-# #         "kms:Encrypt",
-# #         "kms:Decrypt",
-# #         "kms:GenerateDataKey",
-# #         "kms:GenerateDataKey*"                
-# #       ]
-# #     resources = [
-# #       "arn:aws:kms:us-east-1:427130756745:key/*"
-# #     ]
-# #   }
-# #   statement {
-# #     effect = "Allow"
-# #     actions = [
-# #       "s3:GetObject",
-# #       "s3:GetObjectVersion",
-# #       "s3:GetBucketVersioning",
-# #       "s3:PutObject",
-# #       "s3:ListBucketVersions",
-# #       "s3:GetObjectTagging",
-# #       "s3:ListBucket",
-# #       "s3:ListBucket",
-# #       "s3:GetBucketLocation",
-# #       "s3:GetObjectAcl",
-# #       "s3:PutObjectAcl",
-# #       "s3:DeleteObject",
-# #       "s3:GetBucketAcl",
-# #       "s3:PutBucketVersioning"
-# #       ]
-
-# #     resources = [
-# #       "arn:aws:s3:::*"
-# #     ]
-# #   }
-# #   statement {
-# #     effect = "Allow"
-# #     actions = [
-# #       "codebuild:*",
-# #       "codedeploy:*",
-# #       "s3:*"
-# #     ]
-# #     resources = [
-# #       "*"
-# #     ]
-# #   }
-
-# # }
-
-
-# resource "aws_iam_role_policy_attachment" "ec2_pipeline_role_policy" {
-    
-#     depends_on = [
-#       aws_iam_policy.ec2_pipeline_ec2_policy
-#     ]
-#   role  = aws_iam_role.cp_codedeploy_role.name
-#   policy_arn = aws_iam_policy.ec2_pipeline_ec2_policy.arn
-# }
-
-# resource "aws_iam_policy" "ec2_pipeline_ec2_policy" {
-#   #name        = format("%s-%s", local.alight_std_name,var.codedeploy_ec2_policy)
-#   path        = "/"
-#   description = "IAM policy for logging from a lambda"
-
-#   policy = <<EOF
-# {
-#     "Version": "2012-10-17",
-#     "Statement": [
-#         {
-#             "Sid": "VisualEditor0",
-#             "Effect": "Allow",
-#             "Action": [
-#                 "autoscaling:AttachLoadBalancers",
-#                 "autoscaling:EnableMetricsCollection",
-#                 "ec2:TerminateInstances",
-#                 "autoscaling:ResumeProcesses",
-#                 "autoscaling:PutLifecycleHook",
-#                 "autoscaling:SuspendProcesses",
-#                 "autoscaling:PutScheduledUpdateGroupAction",
-#                 "autoscaling:AttachLoadBalancerTargetGroups",
-#                 "autoscaling:PutWarmPool",
-#                 "autoscaling:CompleteLifecycleAction",
-#                 "autoscaling:PutScalingPolicy",
-#                 "autoscaling:UpdateAutoScalingGroup",
-#                 "autoscaling:DeleteAutoScalingGroup",
-#                 "autoscaling:DeleteLifecycleHook",
-#                 "autoscaling:CreateAutoScalingGroup",
-#                 "autoscaling:PutNotificationConfiguration",
-#                 "autoscaling:RecordLifecycleActionHeartbeat"
-#             ],
-#             "Resource": [
-#                 "arn:aws:autoscaling:${module.adl_globals.current_region}:${module.adl_globals.account_id}:autoScalingGroup:*:autoScalingGroupName/*",
-#                 "arn:aws:ec2:${module.adl_globals.current_region}:${module.adl_globals.account_id}:instance/*"
-#             ]
-#         },
-#         {
-#             "Sid": "VisualEditor1",
-#             "Effect": "Allow",
-#             "Action": [
-#                 "ec2:DescribeInstances",
-#                 "autoscaling:DescribeScalingActivities",
-#                 "autoscaling:DescribeAutoScalingGroups",
-#                 "autoscaling:DescribePolicies",
-#                 "autoscaling:DescribeScheduledActions",
-#                 "autoscaling:DescribeNotificationConfigurations",
-#                 "autoscaling:DescribeLifecycleHooks",
-#                 "ec2:DescribeInstanceStatus"
-#             ],
-#             "Resource": "*"
-#         }
-#     ]
-# }
-# EOF
-# }
-
-# Event rules
-
-data "aws_iam_policy_document" "events_assume_role_policy" {
-  statement {
-    effect  = "Allow"
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["events.amazonaws.com"]
+        }
+      }
     }
-  }
-}
-
-resource "aws_iam_role" "cwe_codepipeline_role" {
-  name = format("%s-%s-%s-cwe-codepipeline-role", var.application, module.adl_globals.environment,var.codepipelinename)
-  path = "/"
-  tags = var.tags
-  assume_role_policy = data.aws_iam_policy_document.events_assume_role_policy.json
-
-  inline_policy {
-    name = "codepipelineExecution"
-    policy = data.aws_iam_policy_document.inline_policy.json
-  }
-}
-
-data "aws_iam_policy_document" "inline_policy" {
-  statement {
-    actions = ["codepipeline:StartPipelineExecution"]
-    resources = [aws_codepipeline.codepipeline.arn]
-  }
-}
-
-resource "aws_cloudwatch_event_rule" "console" {
-  name        = "capture-cicd-event-${var.codepipelinename}"
-  description = "Capture S3 Object PUT Opeation"
-
-  event_pattern = templatefile("${path.module}/event.tpl", {
-    source_s3_bucket = var.source_s3_bucket
-    key = format("cicd/codedeploy/%s/%s/%s", var.service,var.repo_name,var.build_code)
-  })
-  
+    
   }
 
-resource "aws_cloudwatch_event_target" "code_pipeline" {
-  rule = aws_cloudwatch_event_rule.console.name
-  target_id = "SendToCodePipeline"
-  arn = aws_codepipeline.codepipeline.arn
-  role_arn = aws_iam_role.cwe_codepipeline_role.arn
+  auto_rollback_configuration {
+    enabled = true
+    events  = ["DEPLOYMENT_FAILURE"]
+  }
 
 }
 
-
-
+resource "aws_codedeploy_deployment_config" "codedeploy_config" {
+  deployment_config_name = format("%s-%s-%s-ec2deploymentconfig", var.application,module.adl_globals.environment,var.codepipelinename)
+  minimum_healthy_hosts {
+    type  = "HOST_COUNT"
+    value = 0
+  }
+}
