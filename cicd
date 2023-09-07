@@ -54,3 +54,21 @@ module.ytr-pipeline["adl-ytr-etl-us13481"].aws_cloudwatch_event_rule.console has
 module.ytr-pipeline["adl-ytr-etl-us17551"].aws_cloudwatch_event_rule.console has been deleted
 module.ytr-pipeline["adl-ytr-etl-us32852"].aws_cloudwatch_event_rule.console has been deleted
 
+resource "aws_cloudwatch_event_rule" "console" {
+  name        = "capture-cicd-event-${var.codepipelinename}"
+  description = "Capture S3 Object PUT Opeation"
+
+  event_pattern = templatefile("${path.module}/event.tpl", {
+    source_s3_bucket = var.source_s3_bucket
+    key = format("cicd/codedeploy/%s/%s/%s", var.service,var.repo_name,var.build_code)
+  })
+  
+  }
+
+resource "aws_cloudwatch_event_target" "code_pipeline" {
+  rule = aws_cloudwatch_event_rule.console.name
+  target_id = "SendToCodePipeline"
+  arn = aws_codepipeline.codepipeline.arn
+  role_arn = aws_iam_role.cwe_codepipeline_role.arn
+
+}
