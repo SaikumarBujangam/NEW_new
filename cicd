@@ -1,160 +1,56 @@
-
-module "adl_globals" {
-  source = "../../modules/module-adl-global"
-
-  application     = var.application
-  service         = var.service
-  environment     = var.environment
-  additional_tags = merge(var.tags, { "dataproduct" = var.service })
-}
-
-locals {
-  layer_names = {
-    codepipeline     = "codepipeline"
-  }
-}
-
-
-
-#####################create s3 bucket#########################
-# module "s3_bucket_codepipeline" {
-#   source = "../../modules/module-adl-s3"
-#   application = var.application
-#   service     = "${var.service}-${local.layer_names.codepipeline}"
-#   environment = module.adl_globals.environment
-#   tags        = module.adl_globals.tags
-#   enable_versioning = true
-#   #kms_key_arn     = "arn:aws:kms:us-east-1:056994788717:key/6216a2ac-e111-4504-8b90-1aad693cd66f"
-# }
-
-data "aws_iam_role" "example" {
-  name = "TerraformOperations"
-}
-
-###################################################
-## Create CodePipeline for buildspec              ###
-###################################################
-
-resource "aws_s3_object" "default_folders" {
-  bucket = var.source_s3_bucket
-  key    = "cicd/codedeploy/${var.service}/${var.repo_name}/"
-}
-
-# Create the codepipeline for taking code from S3 or codecommit and build/deploying to corresponding module 
-resource "aws_codepipeline" "codepipeline" {
-  name = format("%s-%s-%s-codepipeline", var.application,module.adl_globals.environment, var.codepipelinename)
-  role_arn = aws_iam_role.codepipeline_role.arn
-  #role_arn = data.aws_iam_role.example.arn
-  artifact_store {
-    #location = module.s3_bucket_codepipeline.bucket_name
-    location = var.source_s3_bucket
-    type     = "S3"
-    encryption_key {
-      id = "arn:aws:kms:us-east-1:427130756745:key/eb560480-f7e5-4797-8023-b0935ad9b799"
-      type = "KMS"
-    }
-  }
-  stage {
-
-      name = "Source"
-
-      action {
-        name     = "Source"
-        category = "Source"
-        owner    = "AWS"
-        provider = "S3"
-        version  = "1"
-
-        output_artifacts = ["SourceArtifact"]
-
-        configuration = {
-          S3Bucket             = var.source_s3_bucket
-          // build_code = deploy.zip
-          S3ObjectKey          = format("cicd/codedeploy/%s/%s/%s", var.service,var.repo_name,var.build_code)
-          PollForSourceChanges = false
-        }
+module "ytr-pipeline" {
+  for_each = var.ytrpipeline
+  source = "git::codecommit://solution-adl-manifest//solutions/solution-adl-codedeploy?ref=qa"
+  build_code = "ic_deploy.zip"
+  application = module.adl_globals.application
+  service     = "ytr"
+  environment = module.adl_globals.environment
+  codepipelinename = substr(each.value, 4,-1)
+  ec2_filter_tags    = {
+    tag_set_1 = [
+      {
+        key = "appcodedeployment"
+        value = "codepipeline"
+        type = "KEY_AND_VALUE"
       }
-
-  }
-  stage {
-      name = "Deploy"
-      action {
-        name = "Deploy"
-        category        = "Deploy"
-        owner           = "AWS"
-        provider        = "CodeDeploy"
-        input_artifacts = ["SourceArtifact"]
-        version         = "1"
-
-        configuration = {
-          ApplicationName     = aws_codedeploy_app.codedeploy.name #format("%s-%s-%s-ec2deployment", var.application,module.adl_globals.environment,var.service)
-          DeploymentGroupName = aws_codedeploy_deployment_group.codedeploy_group.deployment_group_name
-        }
+    ],
+    tag_set_2 = [
+      {
+        key = "dataplatform"
+        value = "informatica"
+        type = "KEY_AND_VALUE"
       }
-  }  
-
-  # stage {
-  #   name = "Archive"
-
-  #   action {
-  #     name = "Archive"
-  #     category        = "Deploy"
-  #     owner           = "AWS"
-  #     provider        = "S3" 
-  #     input_artifacts = ["SourceArtifact"]
-  #     version         = "1"
-
-  #     configuration = {
-  #       "ObjectKey" = format("%s/%s-%s.zip", "archive",var.build_code,local.timestamp_sanitized)
-  #       "BucketName" = var.pipeline_bucket_name
-  #       "Extract" = "false"
-  #     }
-  #   }
-  # }
-
-
-  tags = module.adl_globals.tags
-}
-
-########### Code Deploy #########
-resource "aws_codedeploy_app" "codedeploy" {
-  name = format("%s-%s-%s-ec2deploymentapp", var.application,module.adl_globals.environment,var.codepipelinename)
-}
-
-
-resource "aws_codedeploy_deployment_group" "codedeploy_group" {  
-  app_name              = aws_codedeploy_app.codedeploy.name
-  deployment_group_name = format("%s-%s-%s-ec2deploymentgroup", var.application,module.adl_globals.environment,var.codepipelinename) 
-  service_role_arn      = aws_iam_role.codepipeline_role.arn
-  deployment_config_name = aws_codedeploy_deployment_config.codedeploy_config.id
-
-  dynamic "ec2_tag_set" {
-    for_each = var.ec2_filter_tags
-    content {
-      dynamic "ec2_tag_filter" {
-        for_each = ec2_tag_set.value
-        content {
-          key   = ec2_tag_filter.value.key
-          type  = ec2_tag_filter.value.type
-          value = ec2_tag_filter.value.value
-
-        }
-      }
-    }
-    
+    ]
   }
-
-  auto_rollback_configuration {
-    enabled = true
-    events  = ["DEPLOYMENT_FAILURE"]
-  }
+  source_s3_bucket = "adl-com-q1-all-codebase-us-east-1-4jljb2g"
+  repo_name       = each.value
 
 }
 
-resource "aws_codedeploy_deployment_config" "codedeploy_config" {
-  deployment_config_name = format("%s-%s-%s-ec2deploymentconfig", var.application,module.adl_globals.environment,var.codepipelinename)
-  minimum_healthy_hosts {
-    type  = "HOST_COUNT"
-    value = 0
-  }
+variable "ytrpipeline" {
+  description = "ytr pipeline name"
+  type = set(string)
+  default = ["adl-ytr-etl-bin","adl-ytr-etl-us00245","adl-ytr-etl-us00398","adl-ytr-etl-us00416","adl-ytr-etl-us00567","adl-ytr-etl-us00620","adl-ytr-etl-us00632","adl-ytr-etl-us00695","adl-ytr-etl-us00936","adl-ytr-etl-us00982","adl-ytr-etl-us01040","adl-ytr-etl-us01165","adl-ytr-etl-us01250","adl-ytr-etl-us01283","adl-ytr-etl-us01303","adl-ytr-etl-us01377","adl-ytr-etl-us01426","adl-ytr-etl-us01479", "adl-ytr-etl-us01526", "adl-ytr-etl-us01576", "adl-ytr-etl-us01638", "adl-ytr-etl-us01698", "adl-ytr-etl-us01700", "adl-ytr-etl-us01711", "adl-ytr-etl-us01725", "adl-ytr-etl-us01762", "adl-ytr-etl-us01808", "adl-ytr-etl-us01860", "adl-ytr-etl-us01924", "adl-ytr-etl-us01955", "adl-ytr-etl-us01995", "adl-ytr-etl-us02056", "adl-ytr-etl-us02215", "adl-ytr-etl-us02265", "adl-ytr-etl-us02292", "adl-ytr-etl-us02346", "adl-ytr-etl-us02360", "adl-ytr-etl-us02491", "adl-ytr-etl-us02524", "adl-ytr-etl-us02553", "adl-ytr-etl-us02799", "adl-ytr-etl-us03060", "adl-ytr-etl-us03102", "adl-ytr-etl-us03177", "adl-ytr-etl-us03207", "adl-ytr-etl-us03349", "adl-ytr-etl-us03356", "adl-ytr-etl-us03394", "adl-ytr-etl-us03537", "adl-ytr-etl-us03742", "adl-ytr-etl-us03860", "adl-ytr-etl-us03889", "adl-ytr-etl-us03955", "adl-ytr-etl-us03974", "adl-ytr-etl-us04027", "adl-ytr-etl-us04039", "adl-ytr-etl-us04269", "adl-ytr-etl-us04343", "adl-ytr-etl-us04508", "adl-ytr-etl-us05094", "adl-ytr-etl-us05262", "adl-ytr-etl-us05317", "adl-ytr-etl-us05320", "adl-ytr-etl-us05434", "adl-ytr-etl-us05561", "adl-ytr-etl-us05565", "adl-ytr-etl-us05728", "adl-ytr-etl-us05790", "adl-ytr-etl-us05838", "adl-ytr-etl-us05911", "adl-ytr-etl-us06070", "adl-ytr-etl-us06223", "adl-ytr-etl-us06352", "adl-ytr-etl-us06678", "adl-ytr-etl-us06957", "adl-ytr-etl-us07538", "adl-ytr-etl-us07812", "adl-ytr-etl-us08086", "adl-ytr-etl-us08101", "adl-ytr-etl-us08141", "adl-ytr-etl-us08853", "adl-ytr-etl-us09252", "adl-ytr-etl-us09301", "adl-ytr-etl-us09408", "adl-ytr-etl-us09429", "adl-ytr-etl-us09529", "adl-ytr-etl-us09796", "adl-ytr-etl-us09852", "adl-ytr-etl-us10050", "adl-ytr-etl-us10162", "adl-ytr-etl-us10197", "adl-ytr-etl-us10557", "adl-ytr-etl-us10590", "adl-ytr-etl-us10820", "adl-ytr-etl-us10825", "adl-ytr-etl-us12314", "adl-ytr-etl-us12374", "adl-ytr-etl-us12467", "adl-ytr-etl-us13481", "adl-ytr-etl-us13599", "adl-ytr-etl-us13611", "adl-ytr-etl-us14086", "adl-ytr-etl-us15039", "adl-ytr-etl-us15757", "adl-ytr-etl-us16040", "adl-ytr-etl-us16511", "adl-ytr-etl-us16528", "adl-ytr-etl-us16568", "adl-ytr-etl-us16581", "adl-ytr-etl-us16589", "adl-ytr-etl-us16654", "adl-ytr-etl-us16662", "adl-ytr-etl-us16693", "adl-ytr-etl-us16697", "adl-ytr-etl-us16716", "adl-ytr-etl-us16717", "adl-ytr-etl-us16728", "adl-ytr-etl-us16754", "adl-ytr-etl-us16766", "adl-ytr-etl-us16878", "adl-ytr-etl-us17521", "adl-ytr-etl-us17551", "adl-ytr-etl-us32852"]
 }
+
+module.ytr-pipeline["adl-ytr-etl-us00567"].aws_cloudwatch_event_rule.console has been deleted
+module.ytr-pipeline["adl-ytr-etl-us00620"].aws_cloudwatch_event_rule.console has been deleted
+module.ytr-pipeline["adl-ytr-etl-us01576"].aws_cloudwatch_event_rule.console has been deleted
+module.ytr-pipeline["adl-ytr-etl-us01698"].aws_cloudwatch_event_rule.console has been deleted
+module.ytr-pipeline["adl-ytr-etl-us01700"].aws_cloudwatch_event_rule.console has been deleted
+module.ytr-pipeline["adl-ytr-etl-us02265"].aws_cloudwatch_event_rule.console has been deleted
+module.ytr-pipeline["adl-ytr-etl-us02491"].aws_cloudwatch_event_rule.console has been deleted
+module.ytr-pipeline["adl-ytr-etl-us03060"].aws_cloudwatch_event_rule.console has been deleted
+module.ytr-pipeline["adl-ytr-etl-us04269"].aws_cloudwatch_event_rule.console has been deleted
+module.ytr-pipeline["adl-ytr-etl-us05320"].aws_cloudwatch_event_rule.console has been deleted
+module.ytr-pipeline["adl-ytr-etl-us05565"].aws_cloudwatch_event_rule.console has been deleted
+module.ytr-pipeline["adl-ytr-etl-us05790"].aws_cloudwatch_event_rule.console has been deleted
+module.ytr-pipeline["adl-ytr-etl-us06678"].aws_cloudwatch_event_rule.console has been deleted
+module.ytr-pipeline["adl-ytr-etl-us07812"].aws_cloudwatch_event_rule.console has been deleted
+module.ytr-pipeline["adl-ytr-etl-us09529"].aws_cloudwatch_event_rule.console has been deleted
+module.ytr-pipeline["adl-ytr-etl-us10197"].aws_cloudwatch_event_rule.console has been deleted
+module.ytr-pipeline["adl-ytr-etl-us12314"].aws_cloudwatch_event_rule.console has been deleted
+module.ytr-pipeline["adl-ytr-etl-us13481"].aws_cloudwatch_event_rule.console has been deleted
+module.ytr-pipeline["adl-ytr-etl-us17551"].aws_cloudwatch_event_rule.console has been deleted
+module.ytr-pipeline["adl-ytr-etl-us32852"].aws_cloudwatch_event_rule.console has been deleted
+
