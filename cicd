@@ -1,74 +1,102 @@
-module "ytr-pipeline" {
-  for_each = var.ytrpipeline
-  source = "git::codecommit://solution-adl-manifest//solutions/solution-adl-codedeploy?ref=qa"
-  build_code = "ic_deploy.zip"
-  application = module.adl_globals.application
-  service     = "ytr"
-  environment = module.adl_globals.environment
-  codepipelinename = substr(each.value, 4,-1)
-  ec2_filter_tags    = {
-    tag_set_1 = [
-      {
-        key = "appcodedeployment"
-        value = "codepipeline"
-        type = "KEY_AND_VALUE"
-      }
-    ],
-    tag_set_2 = [
-      {
-        key = "dataplatform"
-        value = "informatica"
-        type = "KEY_AND_VALUE"
-      }
-    ]
-  }
-  source_s3_bucket = "adl-com-q1-all-codebase-us-east-1-4jljb2g"
-  repo_name       = each.value
+Error: creating IAM Role (adl-com-u1-alightops-compassnavigator-etl-cwe-codepipeline-role): LimitExceeded: Cannot exceed quota for RolesPerAccount: 1000
+    status code: 409, request id: aa541d73-9ce4-4ea2-9568-1cdf08c7e60c
 
-}
+  with module.cdp-pipelines["adl-alightops-compassnavigator-etl"].aws_iam_role.cwe_codepipeline_role,
+  on .terraform/modules/cdp-pipelines/solutions/solution-adl-codedeploy/iam.tf line 239, in resource "aws_iam_role" "cwe_codepipeline_role":
+ 239: resource "aws_iam_role" "cwe_codepipeline_role" {
 
-variable "ytrpipeline" {
-  description = "ytr pipeline name"
-  type = set(string)
-  default = ["adl-ytr-etl-bin","adl-ytr-etl-us00245","adl-ytr-etl-us00398","adl-ytr-etl-us00416","adl-ytr-etl-us00567","adl-ytr-etl-us00620","adl-ytr-etl-us00632","adl-ytr-etl-us00695","adl-ytr-etl-us00936","adl-ytr-etl-us00982","adl-ytr-etl-us01040","adl-ytr-etl-us01165","adl-ytr-etl-us01250","adl-ytr-etl-us01283","adl-ytr-etl-us01303","adl-ytr-etl-us01377","adl-ytr-etl-us01426","adl-ytr-etl-us01479", "adl-ytr-etl-us01526", "adl-ytr-etl-us01576", "adl-ytr-etl-us01638", "adl-ytr-etl-us01698", "adl-ytr-etl-us01700", "adl-ytr-etl-us01711", "adl-ytr-etl-us01725", "adl-ytr-etl-us01762", "adl-ytr-etl-us01808", "adl-ytr-etl-us01860", "adl-ytr-etl-us01924", "adl-ytr-etl-us01955", "adl-ytr-etl-us01995", "adl-ytr-etl-us02056", "adl-ytr-etl-us02215", "adl-ytr-etl-us02265", "adl-ytr-etl-us02292", "adl-ytr-etl-us02346", "adl-ytr-etl-us02360", "adl-ytr-etl-us02491", "adl-ytr-etl-us02524", "adl-ytr-etl-us02553", "adl-ytr-etl-us02799", "adl-ytr-etl-us03060", "adl-ytr-etl-us03102", "adl-ytr-etl-us03177", "adl-ytr-etl-us03207", "adl-ytr-etl-us03349", "adl-ytr-etl-us03356", "adl-ytr-etl-us03394", "adl-ytr-etl-us03537", "adl-ytr-etl-us03742", "adl-ytr-etl-us03860", "adl-ytr-etl-us03889", "adl-ytr-etl-us03955", "adl-ytr-etl-us03974", "adl-ytr-etl-us04027", "adl-ytr-etl-us04039", "adl-ytr-etl-us04269", "adl-ytr-etl-us04343", "adl-ytr-etl-us04508", "adl-ytr-etl-us05094", "adl-ytr-etl-us05262", "adl-ytr-etl-us05317", "adl-ytr-etl-us05320", "adl-ytr-etl-us05434", "adl-ytr-etl-us05561", "adl-ytr-etl-us05565", "adl-ytr-etl-us05728", "adl-ytr-etl-us05790", "adl-ytr-etl-us05838", "adl-ytr-etl-us05911", "adl-ytr-etl-us06070", "adl-ytr-etl-us06223", "adl-ytr-etl-us06352", "adl-ytr-etl-us06678", "adl-ytr-etl-us06957", "adl-ytr-etl-us07538", "adl-ytr-etl-us07812", "adl-ytr-etl-us08086", "adl-ytr-etl-us08101", "adl-ytr-etl-us08141", "adl-ytr-etl-us08853", "adl-ytr-etl-us09252", "adl-ytr-etl-us09301", "adl-ytr-etl-us09408", "adl-ytr-etl-us09429", "adl-ytr-etl-us09529", "adl-ytr-etl-us09796", "adl-ytr-etl-us09852", "adl-ytr-etl-us10050", "adl-ytr-etl-us10162", "adl-ytr-etl-us10197", "adl-ytr-etl-us10557", "adl-ytr-etl-us10590", "adl-ytr-etl-us10820", "adl-ytr-etl-us10825", "adl-ytr-etl-us12314", "adl-ytr-etl-us12374", "adl-ytr-etl-us12467", "adl-ytr-etl-us13481", "adl-ytr-etl-us13599", "adl-ytr-etl-us13611", "adl-ytr-etl-us14086", "adl-ytr-etl-us15039", "adl-ytr-etl-us15757", "adl-ytr-etl-us16040", "adl-ytr-etl-us16511", "adl-ytr-etl-us16528", "adl-ytr-etl-us16568", "adl-ytr-etl-us16581", "adl-ytr-etl-us16589", "adl-ytr-etl-us16654", "adl-ytr-etl-us16662", "adl-ytr-etl-us16693", "adl-ytr-etl-us16697", "adl-ytr-etl-us16716", "adl-ytr-etl-us16717", "adl-ytr-etl-us16728", "adl-ytr-etl-us16754", "adl-ytr-etl-us16766", "adl-ytr-etl-us16878", "adl-ytr-etl-us17521", "adl-ytr-etl-us17551", "adl-ytr-etl-us32852"]
-}
 
-module.ytr-pipeline["adl-ytr-etl-us00567"].aws_cloudwatch_event_rule.console has been deleted
-module.ytr-pipeline["adl-ytr-etl-us00620"].aws_cloudwatch_event_rule.console has been deleted
-module.ytr-pipeline["adl-ytr-etl-us01576"].aws_cloudwatch_event_rule.console has been deleted
-module.ytr-pipeline["adl-ytr-etl-us01698"].aws_cloudwatch_event_rule.console has been deleted
-module.ytr-pipeline["adl-ytr-etl-us01700"].aws_cloudwatch_event_rule.console has been deleted
-module.ytr-pipeline["adl-ytr-etl-us02265"].aws_cloudwatch_event_rule.console has been deleted
-module.ytr-pipeline["adl-ytr-etl-us02491"].aws_cloudwatch_event_rule.console has been deleted
-module.ytr-pipeline["adl-ytr-etl-us03060"].aws_cloudwatch_event_rule.console has been deleted
-module.ytr-pipeline["adl-ytr-etl-us04269"].aws_cloudwatch_event_rule.console has been deleted
-module.ytr-pipeline["adl-ytr-etl-us05320"].aws_cloudwatch_event_rule.console has been deleted
-module.ytr-pipeline["adl-ytr-etl-us05565"].aws_cloudwatch_event_rule.console has been deleted
-module.ytr-pipeline["adl-ytr-etl-us05790"].aws_cloudwatch_event_rule.console has been deleted
-module.ytr-pipeline["adl-ytr-etl-us06678"].aws_cloudwatch_event_rule.console has been deleted
-module.ytr-pipeline["adl-ytr-etl-us07812"].aws_cloudwatch_event_rule.console has been deleted
-module.ytr-pipeline["adl-ytr-etl-us09529"].aws_cloudwatch_event_rule.console has been deleted
-module.ytr-pipeline["adl-ytr-etl-us10197"].aws_cloudwatch_event_rule.console has been deleted
-module.ytr-pipeline["adl-ytr-etl-us12314"].aws_cloudwatch_event_rule.console has been deleted
-module.ytr-pipeline["adl-ytr-etl-us13481"].aws_cloudwatch_event_rule.console has been deleted
-module.ytr-pipeline["adl-ytr-etl-us17551"].aws_cloudwatch_event_rule.console has been deleted
-module.ytr-pipeline["adl-ytr-etl-us32852"].aws_cloudwatch_event_rule.console has been deleted
+Error: creating IAM Role (adl-com-u1-wealth-pss-etl-cwe-codepipeline-role): LimitExceeded: Cannot exceed quota for RolesPerAccount: 1000
+    status code: 409, request id: 22facfda-bafc-4d2a-b6b2-4f2b9c124f73
 
-resource "aws_cloudwatch_event_rule" "console" {
-  name        = "capture-cicd-event-${var.codepipelinename}"
-  description = "Capture S3 Object PUT Opeation"
+  with module.cdp-pipelines["adl-wealth-pss-etl"].aws_iam_role.cwe_codepipeline_role,
+  on .terraform/modules/cdp-pipelines/solutions/solution-adl-codedeploy/iam.tf line 239, in resource "aws_iam_role" "cwe_codepipeline_role":
+ 239: resource "aws_iam_role" "cwe_codepipeline_role" {
 
-  event_pattern = templatefile("${path.module}/event.tpl", {
-    source_s3_bucket = var.source_s3_bucket
-    key = format("cicd/codedeploy/%s/%s/%s", var.service,var.repo_name,var.build_code)
-  })
-  
-  }
 
-resource "aws_cloudwatch_event_target" "code_pipeline" {
-  rule = aws_cloudwatch_event_rule.console.name
-  target_id = "SendToCodePipeline"
-  arn = aws_codepipeline.codepipeline.arn
-  role_arn = aws_iam_role.cwe_codepipeline_role.arn
+Error: creating IAM Role (adl-com-u1-health-cba-etl-cwe-codepipeline-role): LimitExceeded: Cannot exceed quota for RolesPerAccount: 1000
+    status code: 409, request id: 2fd3da3d-0789-486d-ab52-b4b7a4d218ca
 
-}
+  with module.cdp-pipelines["adl-health-cba-etl"].aws_iam_role.cwe_codepipeline_role,
+  on .terraform/modules/cdp-pipelines/solutions/solution-adl-codedeploy/iam.tf line 239, in resource "aws_iam_role" "cwe_codepipeline_role":
+ 239: resource "aws_iam_role" "cwe_codepipeline_role" {
+
+
+Error: creating IAM Role (adl-com-u1-wealth-paymentquality-etl-cwe-codepipeline-role): LimitExceeded: Cannot exceed quota for RolesPerAccount: 1000
+    status code: 409, request id: 9cfd1e13-4c05-4efe-97a9-0d86fbd2ee34
+
+  with module.cdp-pipelines["adl-wealth-paymentquality-etl"].aws_iam_role.cwe_codepipeline_role,
+  on .terraform/modules/cdp-pipelines/solutions/solution-adl-codedeploy/iam.tf line 239, in resource "aws_iam_role" "cwe_codepipeline_role":
+ 239: resource "aws_iam_role" "cwe_codepipeline_role" {
+
+
+Error: creating IAM Role (adl-com-u1-interactns-outreach-etl-cwe-codepipeline-role): LimitExceeded: Cannot exceed quota for RolesPerAccount: 1000
+    status code: 409, request id: 4074d452-e9b0-4a65-9668-a2a0bdee2305
+
+  with module.cdp-pipelines["adl-interactns-outreach-etl"].aws_iam_role.cwe_codepipeline_role,
+  on .terraform/modules/cdp-pipelines/solutions/solution-adl-codedeploy/iam.tf line 239, in resource "aws_iam_role" "cwe_codepipeline_role":
+ 239: resource "aws_iam_role" "cwe_codepipeline_role" {
+
+
+Error: creating IAM Role (adl-com-u1-wealth-dbscorecard-etl-cwe-codepipeline-role): LimitExceeded: Cannot exceed quota for RolesPerAccount: 1000
+    status code: 409, request id: c5ac6e15-8c29-478f-a3d5-7560918c21f5
+
+  with module.cdp-pipelines["adl-wealth-dbscorecard-etl"].aws_iam_role.cwe_codepipeline_role,
+  on .terraform/modules/cdp-pipelines/solutions/solution-adl-codedeploy/iam.tf line 239, in resource "aws_iam_role" "cwe_codepipeline_role":
+ 239: resource "aws_iam_role" "cwe_codepipeline_role" {
+
+
+Error: creating IAM Role (adl-com-u1-ccops-attendancetracker-etl-cwe-codepipeline-role): LimitExceeded: Cannot exceed quota for RolesPerAccount: 1000
+    status code: 409, request id: 050483bd-9df5-4c52-8a60-b1100c38d434
+
+  with module.cdp-pipelines["adl-ccops-attendancetracker-etl"].aws_iam_role.cwe_codepipeline_role,
+  on .terraform/modules/cdp-pipelines/solutions/solution-adl-codedeploy/iam.tf line 239, in resource "aws_iam_role" "cwe_codepipeline_role":
+ 239: resource "aws_iam_role" "cwe_codepipeline_role" {
+
+
+Error: creating IAM Role (adl-com-u1-interactns-virtualhold-etl-cwe-codepipeline-role): LimitExceeded: Cannot exceed quota for RolesPerAccount: 1000
+    status code: 409, request id: 20b093a3-c1e2-4a39-90f1-ebbeacddb6c5
+
+  with module.cdp-pipelines["adl-interactns-virtualhold-etl"].aws_iam_role.cwe_codepipeline_role,
+  on .terraform/modules/cdp-pipelines/solutions/solution-adl-codedeploy/iam.tf line 239, in resource "aws_iam_role" "cwe_codepipeline_role":
+ 239: resource "aws_iam_role" "cwe_codepipeline_role" {
+
+
+Error: creating IAM Role (adl-com-u1-alightsec-ags-etl-cwe-codepipeline-role): LimitExceeded: Cannot exceed quota for RolesPerAccount: 1000
+    status code: 409, request id: 37f8e41b-00cc-45b4-a812-14133e140494
+
+  with module.cdp-pipelines["adl-alightsec-ags-etl"].aws_iam_role.cwe_codepipeline_role,
+  on .terraform/modules/cdp-pipelines/solutions/solution-adl-codedeploy/iam.tf line 239, in resource "aws_iam_role" "cwe_codepipeline_role":
+ 239: resource "aws_iam_role" "cwe_codepipeline_role" {
+
+
+Error: creating IAM Role (adl-com-u1-engagement-hype-etl-cwe-codepipeline-role): LimitExceeded: Cannot exceed quota for RolesPerAccount: 1000
+    status code: 409, request id: 04984e38-2e2d-4568-bcfa-2322b20582d6
+
+  with module.cdp-pipelines["adl-engagement-hype-etl"].aws_iam_role.cwe_codepipeline_role,
+  on .terraform/modules/cdp-pipelines/solutions/solution-adl-codedeploy/iam.tf line 239, in resource "aws_iam_role" "cwe_codepipeline_role":
+ 239: resource "aws_iam_role" "cwe_codepipeline_role" {
+
+
+Error: creating IAM Role (adl-com-u1-wealth-tbadashboards-etl-cwe-codepipeline-role): LimitExceeded: Cannot exceed quota for RolesPerAccount: 1000
+    status code: 409, request id: 093a065f-5d3f-4610-b86b-357a15327991
+
+  with module.cdp-pipelines["adl-wealth-tbadashboards-etl"].aws_iam_role.cwe_codepipeline_role,
+  on .terraform/modules/cdp-pipelines/solutions/solution-adl-codedeploy/iam.tf line 239, in resource "aws_iam_role" "cwe_codepipeline_role":
+ 239: resource "aws_iam_role" "cwe_codepipeline_role" {
+
+
+Error: creating IAM Role (adl-com-u1-adlfound-common-etl-cwe-codepipeline-role): LimitExceeded: Cannot exceed quota for RolesPerAccount: 1000
+    status code: 409, request id: 5f734fd9-552a-460d-a58d-0c8c1bd57736
+
+  with module.cdp-pipelines["adl-adlfound-common-etl"].aws_iam_role.cwe_codepipeline_role,
+  on .terraform/modules/cdp-pipelines/solutions/solution-adl-codedeploy/iam.tf line 239, in resource "aws_iam_role" "cwe_codepipeline_role":
+ 239: resource "aws_iam_role" "cwe_codepipeline_role" {
+
+
+[Container] 2023/09/07 16:12:54 Command did not exit successfully if [ $status == 'fail' ]; then cat applyerrors.txt >&2; exit 1; fi exit status 1
+[Container] 2023/09/07 16:12:54 Phase complete: BUILD State: FAILED
+[Container] 2023/09/07 16:12:54 Phase context status code: COMMAND_EXECUTION_ERROR Message: Error while executing command: if [ $status == 'fail' ]; then cat applyerrors.txt >&2; exit 1; fi. Reason: exit status 1
+[Container] 2023/09/07 16:12:54 Entering phase POST_BUILD
+[Container] 2023/09/07 16:12:54 Phase complete: POST_BUILD State: SUCCEEDED
+[Container] 2023/09/07 16:12:54 Phase context status code:  Message: 
