@@ -1,6 +1,6 @@
-resource "aws_iam_role" "codepipeline_role" {
-  name = format("%s-%s-%s-codepipeline-role", var.application, module.adl_globals.environment,var.codepipelinename)
-  path               = "/"
-  tags               = var.tags
-  assume_role_policy = data.aws_iam_policy_document.codepipeline_assume_role_policy.json
-}
+ Error: expected length of name to be in the range (1 - 64), got adl-com-d1-interactns-qualityevaluations-etl-cwe-codepipeline-role
+│ 
+│   with module.cdp-pipelines["adl-interactns-qualityevaluations-etl"].aws_iam_role.cwe_codepipeline_role,
+│   on .terraform/modules/cdp-pipelines/solutions/solution-adl-codedeploy/iam.tf line 283, in resource "aws_iam_role" "cwe_codepipeline_role":
+│  283:   name = format("%s-%s-%s-cwe-codepipeline-role", var.application, module.adl_globals.environment,var.codepipelinename)
+│ 
