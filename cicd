@@ -1,27 +1,37 @@
-
-[Container] 2023/09/14 11:09:12 Running command if [ $status == 'fail' ]; then cat applyerrors.txt >&2; exit 1; fi
-
-Error: deleting EventBridge Rule (capture-cicd-event-health-compass-etl): ValidationException: Rule can't be deleted since it has targets.
-    status code: 400, request id: 97b45c18-99a2-4755-9c39-8b16968886df
-
-
-Error: creating IAM Role (adl-com-d1-engagement-hype-etl-codepipeline-role): EntityAlreadyExists: Role with name adl-com-d1-engagement-hype-etl-codepipeline-role already exists.
-    status code: 409, request id: dd1005d3-ba2f-4a38-b9cb-a79d4dafc602
-
-  with module.cdp-pipelines["adl-engagement-hype-etl"].aws_iam_role.codepipeline_role,
-  on .terraform/modules/cdp-pipelines/solutions/solution-adl-codedeploy/iam.tf line 15, in resource "aws_iam_role" "codepipeline_role":
-  15: resource "aws_iam_role" "codepipeline_role" {
-
-
-Error: creating CodeDeploy Application (adl-com-d1-engagement-hype-etl-ec2deploymentapp): ApplicationAlreadyExistsException: Application already exists for arn:arn:aws:codedeploy:us-east-1:056994788717:application:adl-com-d1-engagement-hype-etl-ec2deploymentapp
-
-  with module.cdp-pipelines["adl-engagement-hype-etl"].aws_codedeploy_app.codedeploy,
-  on .terraform/modules/cdp-pipelines/solutions/solution-adl-codedeploy/main.tf line 120, in resource "aws_codedeploy_app" "codedeploy":
- 120: resource "aws_codedeploy_app" "codedeploy" {
-
-
-Error: creating CodeDeploy Deployment Config (adl-com-d1-engagement-hype-etl-ec2deploymentconfig): DeploymentConfigAlreadyExistsException: adl-com-d1-engagement-hype-etl-ec2deploymentconfig already exists.
-
-  with module.cdp-pipelines["adl-engagement-hype-etl"].aws_codedeploy_deployment_config.codedeploy_config,
-  on .terraform/modules/cdp-pipelines/solutions/solution-adl-codedeploy/main.tf line 154, in resource "aws_codedeploy_deployment_config" "codedeploy_config":
- 154: resource "aws_codedeploy_deployment_config" "codedeploy_config" {
+{# cdp_build_afterinstall.template.txt #}
+#!/bin/bash
+chown {{DATAPRODUCT_USER}}:{{DATAPRODUCT_GROUP}} {{APP_DATAPRODUCT_DIR}}
+chmod 755 {{APP_DATAPRODUCT_DIR}}
+chown -R {{DATAPRODUCT_USER}}:{{DATAPRODUCT_GROUP}} {{APP_DATAPRODUCT_DIR}}/{{APP_SUBJECT_AREA}}
+sudo -i -u {{DATAPRODUCT_USER}} mkdir {{APP_INSTALL_DIR}}
+sudo -i -u {{DATAPRODUCT_USER}} mkdir -p {{APP_LAND_DIR}}/install
+sudo -i -u {{DATAPRODUCT_USER}} tar -xvf {{APP_LAND_DIR}}/{{APP_SUBJECT_AREA}}-{{APP_VERSION}}.tar --directory {{APP_LAND_DIR}}/install
+sudo -i -u {{DATAPRODUCT_USER}} mkdir -p {{APP_LAND_DIR}}/stage
+sudo -i -u {{DATAPRODUCT_USER}} tar -xvf {{APP_LAND_DIR}}/{{APP_SUBJECT_AREA}}-{{APP_VERSION}}.tar --directory {{APP_LAND_DIR}}/stage
+AUTO_INFLATE_FLAG={{AUTO_INFLATE_FLAG}}
+if [[ ${AUTO_INFLATE_FLAG} != "True" ]]
+then
+  exit 0
+else
+ cd {{APP_LAND_DIR}}/stage
+  if [[ -d "/apps/edh/prod" && -d "/apps/ben/prod" ]]
+  then
+      for install_path in $(find . -type f)
+      do
+        install_file=$(echo ${install_path##*/})
+        install_directory=$(echo ${install_path%/*} | cut -c3- )
+        sudo -i -u {{DATAPRODUCT_USER}} mkdir /apps/${install_directory} && \
+        cp {{APP_LAND_DIR}}/stage/${install_directory}/${install_file} /apps/${install_directory}/${install_file} && \
+		   chgrp {{DATAPRODUCT_GROUP}} /apps/${install_directory}/${install_file}
+        if [ $? -ne "0" ]]
+        then
+          echo "Error: Failed to copy required files from ${APP_LAND_DIR}}/stage/${install_directory}/${install_file} to /apps/${install_directory}/${install_file}"
+          exit 1
+        fi
+        if [[ ${install_path} == *"bin/"* || ${install_path} == *"scripts/"* ]]
+        then
+          sudo -i -u {{DATAPRODUCT_USER}} chmod +x /apps/${install_directory}/${install_file}
+        fi
+      done
+      cd {{APP_LAND_DIR}}
+      rm -rf stage
