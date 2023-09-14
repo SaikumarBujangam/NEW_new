@@ -1,77 +1,27 @@
-#!/bin/bash
-# Put your specific needs here
-# example: export CONTACT_EMAIL=your-dataproduct-admin-list@alight.com
-redshift_user_name=hwr_etl_spark_svc
-build_filter_list=".version src ddl config"
-if [[ ${APP_ENV} = "dev" ]]
-then
-  export db_producer_database_name=${PRODUCER_DB2}
-  export db_consumer_database_name=${CONSUMER_DB2}
-  export db_producer_cluster_id=${PRODUCER_CLUSTER_ID1}
-  export db_consumer_cluster_id=${CONSUMER_CLUSTER_ID1}
-elif [[ ${APP_ENV} = "qa" ]]
-then
-  export db_producer_database_name=${PRODUCER_DB2}
-  export db_consumer_database_name=${CONSUMER_DB2}
-  export db_producer_cluster_id=${PRODUCER_CLUSTER_ID1}
-  export db_consumer_cluster_id=${CONSUMER_CLUSTER_ID1}
-elif [[ ${APP_ENV} = "qc" ]]
-then
-  export db_producer_database_name=${PRODUCER_DB1}
-  export db_consumer_database_name=${CONSUMER_DB1}
-  export db_producer_cluster_id=${PRODUCER_CLUSTER_ID1}
-  export db_consumer_cluster_id=${CONSUMER_CLUSTER_ID1}
-elif [[ ${APP_ENV} = "prod" ]]
-then
-  export db_producer_database_name=${PRODUCER_DB1}
-  export db_consumer_database_name=${CONSUMER_DB1}
-  export db_producer_cluster_id=${PRODUCER_CLUSTER_ID1}
-  export db_consumer_cluster_id=${CONSUMER_CLUSTER_ID1}
-fi
+
+[Container] 2023/09/14 11:09:12 Running command if [ $status == 'fail' ]; then cat applyerrors.txt >&2; exit 1; fi
+
+Error: deleting EventBridge Rule (capture-cicd-event-health-compass-etl): ValidationException: Rule can't be deleted since it has targets.
+    status code: 400, request id: 97b45c18-99a2-4755-9c39-8b16968886df
 
 
-build_client_list()
-{
-  dis_schema_list=""
-  raw_schema_list=""
-  hwr_itg_schema_list=""
-  for client in $(cat client_list.txt)
-  do
-    dis_schema_list="dis_${client} ${dis_schema_list}"
-    hwr_itg_schema_list="hwr_itg_${client} ${dis_schema_list}"
-    raw_schema_list="raw_${client} ${dis_schema_list}"
-  done
-  export dis_schema_list=$(echo $dis_schema_list|tr ' ' ',')
-  export hwr_itg_schema_list=$(echo $hwr_itg_schema_list|tr ' ' ',')
-  export raw_schema_list=$(echo $raw_schema_list|tr ' ' ',')
-}
+Error: creating IAM Role (adl-com-d1-engagement-hype-etl-codepipeline-role): EntityAlreadyExists: Role with name adl-com-d1-engagement-hype-etl-codepipeline-role already exists.
+    status code: 409, request id: dd1005d3-ba2f-4a38-b9cb-a79d4dafc602
 
-build_client_list
+  with module.cdp-pipelines["adl-engagement-hype-etl"].aws_iam_role.codepipeline_role,
+  on .terraform/modules/cdp-pipelines/solutions/solution-adl-codedeploy/iam.tf line 15, in resource "aws_iam_role" "codepipeline_role":
+  15: resource "aws_iam_role" "codepipeline_role" {
 
 
-buildfile()
-{
-  while read p; do
-    echo "$p"
-    for FILE in $(ls adl-hwr-migration/config/view_build_complete/CAT_DIMN.dbbuild.ini)
-    do
-       var1="${FILE##*/}"
-       var="${p}"_"${var1}"
-       cp $FILE adl-hwr-migration/config/$var
-       filename1=$(basename "$FILE")
-       filename1=$(echo "$filename1" | cut -f 1 -d '.')
-       filename2=$(basename "$var")
-       filename2=$(echo "$filename2" | cut -f 1 -d '.')
-       str1="${filename1}".ddl
-       str2="${filename2}".ddl
-       sed -i "s/${filename1}/${filename2}/g" "adl-hwr-migration/config/${var}"
-       sed -i "s/${str2}/${str1}/g" "adl-hwr-migration/config/${var}"
-       sed -i "s/RPT_SCHEMA_PLACEHOLDER/hwr_rpt_${p}/g" "adl-hwr-migration/config/${var}"
-       sed -i "s/ITG_SCHEMA_PLACEHOLDER/hwr_itg_tba_cc/g" "adl-hwr-migration/config/${var}"
-       sed -i "s/CLIENT_ID_PLACEHOLDER/${p}/g" "adl-hwr-migration/config/${var}"
-       echo ${var} >> adl-hwr-migration/config/dbbuild.ini
-    done
-  done < adl-hwr-migration/client_list.txt
-}
+Error: creating CodeDeploy Application (adl-com-d1-engagement-hype-etl-ec2deploymentapp): ApplicationAlreadyExistsException: Application already exists for arn:arn:aws:codedeploy:us-east-1:056994788717:application:adl-com-d1-engagement-hype-etl-ec2deploymentapp
 
-buildfile
+  with module.cdp-pipelines["adl-engagement-hype-etl"].aws_codedeploy_app.codedeploy,
+  on .terraform/modules/cdp-pipelines/solutions/solution-adl-codedeploy/main.tf line 120, in resource "aws_codedeploy_app" "codedeploy":
+ 120: resource "aws_codedeploy_app" "codedeploy" {
+
+
+Error: creating CodeDeploy Deployment Config (adl-com-d1-engagement-hype-etl-ec2deploymentconfig): DeploymentConfigAlreadyExistsException: adl-com-d1-engagement-hype-etl-ec2deploymentconfig already exists.
+
+  with module.cdp-pipelines["adl-engagement-hype-etl"].aws_codedeploy_deployment_config.codedeploy_config,
+  on .terraform/modules/cdp-pipelines/solutions/solution-adl-codedeploy/main.tf line 154, in resource "aws_codedeploy_deployment_config" "codedeploy_config":
+ 154: resource "aws_codedeploy_deployment_config" "codedeploy_config" {
