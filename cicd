@@ -1,37 +1,188 @@
-{# cdp_build_afterinstall.template.txt #}
-#!/bin/bash
-chown {{DATAPRODUCT_USER}}:{{DATAPRODUCT_GROUP}} {{APP_DATAPRODUCT_DIR}}
-chmod 755 {{APP_DATAPRODUCT_DIR}}
-chown -R {{DATAPRODUCT_USER}}:{{DATAPRODUCT_GROUP}} {{APP_DATAPRODUCT_DIR}}/{{APP_SUBJECT_AREA}}
-sudo -i -u {{DATAPRODUCT_USER}} mkdir {{APP_INSTALL_DIR}}
-sudo -i -u {{DATAPRODUCT_USER}} mkdir -p {{APP_LAND_DIR}}/install
-sudo -i -u {{DATAPRODUCT_USER}} tar -xvf {{APP_LAND_DIR}}/{{APP_SUBJECT_AREA}}-{{APP_VERSION}}.tar --directory {{APP_LAND_DIR}}/install
-sudo -i -u {{DATAPRODUCT_USER}} mkdir -p {{APP_LAND_DIR}}/stage
-sudo -i -u {{DATAPRODUCT_USER}} tar -xvf {{APP_LAND_DIR}}/{{APP_SUBJECT_AREA}}-{{APP_VERSION}}.tar --directory {{APP_LAND_DIR}}/stage
-AUTO_INFLATE_FLAG={{AUTO_INFLATE_FLAG}}
-if [[ ${AUTO_INFLATE_FLAG} != "True" ]]
-then
-  exit 0
-else
- cd {{APP_LAND_DIR}}/stage
-  if [[ -d "/apps/edh/prod" && -d "/apps/ben/prod" ]]
-  then
-      for install_path in $(find . -type f)
-      do
-        install_file=$(echo ${install_path##*/})
-        install_directory=$(echo ${install_path%/*} | cut -c3- )
-        sudo -i -u {{DATAPRODUCT_USER}} mkdir /apps/${install_directory} && \
-        cp {{APP_LAND_DIR}}/stage/${install_directory}/${install_file} /apps/${install_directory}/${install_file} && \
-		   chgrp {{DATAPRODUCT_GROUP}} /apps/${install_directory}/${install_file}
-        if [ $? -ne "0" ]]
-        then
-          echo "Error: Failed to copy required files from ${APP_LAND_DIR}}/stage/${install_directory}/${install_file} to /apps/${install_directory}/${install_file}"
-          exit 1
-        fi
-        if [[ ${install_path} == *"bin/"* || ${install_path} == *"scripts/"* ]]
-        then
-          sudo -i -u {{DATAPRODUCT_USER}} chmod +x /apps/${install_directory}/${install_file}
-        fi
-      done
-      cd {{APP_LAND_DIR}}
-      rm -rf stage
+
+module "adl_globals" {
+  source = "../../modules/module-adl-global"
+
+  application     = var.application
+  service         = var.service
+  environment     = var.environment
+  additional_tags = merge(var.tags, { "dataproduct" = var.service })
+}
+
+locals {
+  layer_names = {
+    codepipeline     = "codepipeline"
+  }
+}
+
+
+
+#####################create s3 bucket#########################
+# module "s3_bucket_codepipeline" {
+#   source = "../../modules/module-adl-s3"
+#   application = var.application
+#   service     = "${var.service}-${local.layer_names.codepipeline}"
+#   environment = module.adl_globals.environment
+#   tags        = module.adl_globals.tags
+#   enable_versioning = true
+#   #kms_key_arn     = "arn:aws:kms:us-east-1:056994788717:key/6216a2ac-e111-4504-8b90-1aad693cd66f"
+# }
+
+data "aws_iam_role" "example" {
+  name = "TerraformOperations"
+}
+
+###################################################
+## Create CodePipeline for buildspec              ###
+###################################################
+
+resource "aws_s3_object" "default_folders" {
+  bucket = var.source_s3_bucket
+  key    = "cicd/codedeploy/${var.service}/${var.repo_name}/"
+}
+
+# Create the codepipeline for taking code from S3 or codecommit and build/deploying to corresponding module 
+resource "aws_codepipeline" "codepipeline" {
+  name = format("%s-%s-%s-codepipeline", var.application,module.adl_globals.environment, var.codepipelinename)
+  role_arn = aws_iam_role.codepipeline_role.arn
+  #role_arn = data.aws_iam_role.example.arn
+  artifact_store {
+    #location = module.s3_bucket_codepipeline.bucket_name
+    location = var.source_s3_bucket
+    type     = "S3"
+    encryption_key {
+      id = module.adl_globals.kms_cmk_arn
+      type = "KMS"
+    }
+  }
+  stage {
+
+      name = "Source"
+
+      action {
+        name     = "Source"
+        category = "Source"
+        owner    = "AWS"
+        provider = "S3"
+        version  = "1"
+
+        output_artifacts = ["SourceArtifact"]
+
+        configuration = {
+          S3Bucket             = var.source_s3_bucket
+          // build_code = deploy.zip
+          S3ObjectKey          = format("cicd/codedeploy/%s/%s/%s", var.service,var.repo_name,var.build_code)
+          PollForSourceChanges = false
+        }
+      }
+
+  }
+  stage {
+      name = "Deploy"
+      action {
+        name = "Deploy"
+        category        = "Deploy"
+        owner           = "AWS"
+        provider        = "CodeDeploy"
+        input_artifacts = ["SourceArtifact"]
+        version         = "1"
+
+        configuration = {
+          ApplicationName     = aws_codedeploy_app.codedeploy.name #format("%s-%s-%s-ec2deployment", var.application,module.adl_globals.environment,var.service)
+          DeploymentGroupName = aws_codedeploy_deployment_group.codedeploy_group.deployment_group_name
+        }
+      }
+  }  
+
+  # stage {
+  #   name = "Archive"
+
+  #   action {
+  #     name = "Archive"
+  #     category        = "Deploy"
+  #     owner           = "AWS"
+  #     provider        = "S3" 
+  #     input_artifacts = ["SourceArtifact"]
+  #     version         = "1"
+
+  #     configuration = {
+  #       "ObjectKey" = format("%s/%s-%s.zip", "archive",var.build_code,local.timestamp_sanitized)
+  #       "BucketName" = var.pipeline_bucket_name
+  #       "Extract" = "false"
+  #     }
+  #   }
+  # }
+
+
+  tags = module.adl_globals.tags
+}
+
+########### Code Deploy #########
+resource "aws_codedeploy_app" "codedeploy" {
+  name = format("%s-%s-%s-ec2deploymentapp", var.application,module.adl_globals.environment,var.codepipelinename)
+}
+
+
+resource "aws_codedeploy_deployment_group" "codedeploy_group" {  
+  app_name              = aws_codedeploy_app.codedeploy.name
+  deployment_group_name = format("%s-%s-%s-ec2deploymentgroup", var.application,module.adl_globals.environment,var.codepipelinename) 
+  service_role_arn      = aws_iam_role.cp_codedeploy_role.arn
+  deployment_config_name = aws_codedeploy_deployment_config.codedeploy_config.id
+
+  dynamic "ec2_tag_set" {
+    for_each = var.ec2_filter_tags
+    content {
+      dynamic "ec2_tag_filter" {
+        for_each = ec2_tag_set.value
+        content {
+          key   = ec2_tag_filter.value.key
+          type  = ec2_tag_filter.value.type
+          value = ec2_tag_filter.value.value
+
+        }
+      }
+    }
+    
+  }
+
+  auto_rollback_configuration {
+    enabled = true
+    events  = ["DEPLOYMENT_FAILURE"]
+  }
+
+}
+
+resource "aws_codedeploy_deployment_config" "codedeploy_config" {
+  deployment_config_name = format("%s-%s-%s-ec2deploymentconfig", var.application,module.adl_globals.environment,var.codepipelinename)
+  minimum_healthy_hosts {
+    type  = "HOST_COUNT"
+    value = 0
+  }
+}
+
+module "insights_indexes_cdp_pkg_codepipeline" {
+  source = "git::codecommit://solution-adl-manifest//solutions/solution-adl-codedeploy?ref=develop"
+  build_code = "cdp_pkg_deploy.zip"
+  application = module.adl_globals.application
+  service     = module.adl_globals.service
+  environment = module.adl_globals.environment
+  codepipelinename = "insights-indexes-etl"
+  ec2_filter_tags    = {
+    tag_set_1 = [
+      {
+        key = "appcodedeployment"
+        value = "codepipeline"
+        type = "KEY_AND_VALUE"
+      }
+    ],
+    tag_set_2 = [
+      {
+        key = "dataplatform"
+        value = "cdp"
+        type = "KEY_AND_VALUE"
+      }
+    ]
+  }
+  source_s3_bucket = "adl-com-d1-all-codebase-us-east-1-wlxartd"
+  repo_name       = "adl-insights-indexes-etl"
+
+}
