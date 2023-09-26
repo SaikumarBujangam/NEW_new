@@ -149,7 +149,7 @@ jobs:
           python ${repo_base}/src/alight/foundation/app/generatetemplate.py --base-arg-parser-config-file-location ${repo_base}/config --base-arg-parser-config-file-name generate-template-build-args.json --template-root-location ${repo_base}/.github/data --template-file-name CODEOWNERS.template --generated-script-file-location ${repo_base} --generated-script-file-name CODEOWNERS_QC \
           --cicdvar "CODE_OWNER_TEAM_NAME=${{ inputs.repo-approver-team }}" \
           --cicdvar "ADMIN_TEAM_NAME=${{ inputs.admin-team-name }}"
-          
+
           python ${repo_base}/src/alight/foundation/app/generatetemplate.py --base-arg-parser-config-file-location ${repo_base}/config --base-arg-parser-config-file-name generate-template-build-args.json --template-root-location ${repo_base}/.github/data --template-file-name CODEOWNERS.template --generated-script-file-location ${repo_base} --generated-script-file-name CODEOWNERS_PROD \
           --cicdvar "CODE_OWNER_TEAM_NAME=${{ inputs.repo-dataproductowner-approvers-team }}" \
           --cicdvar "ADMIN_TEAM_NAME=${{ inputs.admin-team-name }}"
@@ -178,19 +178,35 @@ jobs:
           sleep 5        
           export last_sha=$(gh api --method GET -H "Accept: application/vnd.github+json" /repos/${{ inputs.org-name }}/${{ inputs.repo-division-name }}-${{ inputs.repo-group-name }}-${{ inputs.repo-subject-area }}/git/refs/heads/release/qa | jq | grep sha | cut -f2 -d":" | tr ',' ' ' | tr -d '"')
           gh api --method POST -H "Accept: application/vnd.github+json" /repos/${{ inputs.org-name }}/${{ inputs.repo-division-name }}-${{ inputs.repo-group-name }}-${{ inputs.repo-subject-area }}/git/refs -f ref='refs/heads/release/qc' -f sha=$(echo ${last_sha})
-          sleep 5        
+          sleep 5
+          export last_sha=$(gh api --method GET -H "Accept: application/vnd.github+json" /repos/${{ inputs.org-name }}/${{ inputs.repo-division-name }}-${{ inputs.repo-group-name }}-${{ inputs.repo-subject-area }}/git/refs/heads/release/qc | jq | grep sha | cut -f2 -d":" | tr ',' ' ' | tr -d '"')
+          gh api --method POST -H "Accept: application/vnd.github+json" /repos/${{ inputs.org-name }}/${{ inputs.repo-division-name }}-${{ inputs.repo-group-name }}-${{ inputs.repo-subject-area }}/git/refs -f ref='refs/heads/release/prod' -f sha=$(echo ${last_sha})      
 
-      - name: Add Code Owners To QC
+      - name: Add Code Owners To QA/QC/PROD
         env:
           github_user: ${{ secrets.GH_USER_NAME }}
           GH_TOKEN: ${{ secrets.GH_CLONE_REPO }}
-        run: |        
+        run: |
+          sleep 5
+          export last_sha=$(gh api --method GET -H "Accept: application/vnd.github+json" /repos/${{ inputs.org-name }}/${{ inputs.repo-division-name }}-${{ inputs.repo-group-name }}-${{ inputs.repo-subject-area }}/contents/CODEOWNERS -f ref="release/qa"| jq | grep sha | cut -f2 -d":" | tr ',' ' ' | tr -d '"')
+          
+          sleep 5
+          code_owners_content=$(cat ${repo_base}/CODEOWNERS_MASTER_QA |base64 -w 0)
+          code_owners_data="{\"message\":\"Updates CODEOWNERS file on release/qa branch\",\"committer\":{\"name\":\"David Madison\",\"email\":\"david.madison@alight.com\"},\"content\": \"$(echo ${code_owners_content})\",\"branch\": \"release/qa\",\"sha\": \"$(echo ${last_sha})\"}"
+          echo $code_owners_data > code_owners_data.json
+
+          sleep 5
+          curl -X PUT \
+          -H "Authorization: Bearer ${{ secrets.GH_CLONE_REPO }}" -H "Accept: application/vnd.github+json" \
+          https://api.github.com/repos/${{ inputs.org-name }}/${{ inputs.repo-division-name }}-${{ inputs.repo-group-name }}-${{ inputs.repo-subject-area }}/contents/CODEOWNERS \
+          -d @code_owners_data.json 
+          
           sleep 5
           export last_sha=$(gh api --method GET -H "Accept: application/vnd.github+json" /repos/${{ inputs.org-name }}/${{ inputs.repo-division-name }}-${{ inputs.repo-group-name }}-${{ inputs.repo-subject-area }}/contents/CODEOWNERS | jq | grep sha | cut -f2 -d":" | tr ',' ' ' | tr -d '"')
           
           sleep 5
           repo_base=$(pwd)/adl-awsdeploy-cicd
-          code_owners_content=$(cat ${repo_base}/CODEOWNERS_QC_PROD |base64 -w 0)
+          code_owners_content=$(cat ${repo_base}/CODEOWNERS_QC |base64 -w 0)
           code_owners_data="{\"message\":\"Updates CODEOWNERS file on release/qc branch\",\"committer\":{\"name\":\"David Madison\",\"email\":\"david.madison@alight.com\"},\"content\": \"$(echo ${code_owners_content})\",\"branch\": \"release/qc\",\"sha\": \"$(echo ${last_sha})\"}"
           echo $code_owners_data > code_owners_data.json
 
@@ -200,15 +216,11 @@ jobs:
           https://api.github.com/repos/${{ inputs.org-name }}/${{ inputs.repo-division-name }}-${{ inputs.repo-group-name }}-${{ inputs.repo-subject-area }}/contents/CODEOWNERS \
           -d @code_owners_data.json 
           
-          sleep 15
-          export last_sha=$(gh api --method GET -H "Accept: application/vnd.github+json" /repos/${{ inputs.org-name }}/${{ inputs.repo-division-name }}-${{ inputs.repo-group-name }}-${{ inputs.repo-subject-area }}/git/refs/heads/release/qc | jq | grep sha | cut -f2 -d":" | tr ',' ' ' | tr -d '"')
-          gh api --method POST -H "Accept: application/vnd.github+json" /repos/${{ inputs.org-name }}/${{ inputs.repo-division-name }}-${{ inputs.repo-group-name }}-${{ inputs.repo-subject-area }}/git/refs -f ref='refs/heads/release/prod' -f sha=$(echo ${last_sha})
-          
           sleep 5
           export last_sha=$(gh api --method GET -H "Accept: application/vnd.github+json" /repos/${{ inputs.org-name }}/${{ inputs.repo-division-name }}-${{ inputs.repo-group-name }}-${{ inputs.repo-subject-area }}/contents/CODEOWNERS -f ref="release/prod" | jq | grep sha | cut -f2 -d":" | tr ',' ' ' | tr -d '"')
           
           sleep 5
-          code_owners_content=$(cat ${repo_base}/CODEOWNERS_QC_PROD |base64 -w 0)
+          code_owners_content=$(cat ${repo_base}/CODEOWNERS_PROD |base64 -w 0)
           code_owners_data="{\"message\":\"Updates CODEOWNERS file on release/prod branch\",\"committer\":{\"name\":\"David Madison\",\"email\":\"david.madison@alight.com\"},\"content\": \"$(echo ${code_owners_content})\",\"branch\": \"release/prod\",\"sha\": \"$(echo ${last_sha})\"}"
           echo $code_owners_data > code_owners_data.json
 
@@ -284,7 +296,7 @@ jobs:
       org-name: ${{ inputs.org-name }}
       branch-name: "release%2Fprod"
       branch-permissions-base-name: prod-branch-permissions
-      branch-permissions-approver-team: ${{ inputs.repo-approver-team }}
+      branch-permissions-approver-team: ${{ inputs.repo-dataproductowner-approvers-team }}
       branch-permissions-bypass-team: ${{ inputs.admin-team-name }}
     secrets:
       branch-user: ${{ secrets.GH_USER_NAME }}
