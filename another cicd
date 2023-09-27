@@ -1,0 +1,488 @@
+2023-09-21T14:29:39.4771260Z Requested labels: ubuntu-latest
+2023-09-21T14:29:39.4771704Z Job defined at: AlightEngineering/adl-awsdeploy-cicd/.github/workflows/adl-create-repo.yml@refs/heads/master
+2023-09-21T14:29:39.4771854Z Waiting for a runner to pick up this job...
+2023-09-21T14:29:40.1587674Z Job is waiting for a hosted runner to come online.
+2023-09-21T14:29:44.1755372Z Job is about to start running on the hosted runner: GitHub Actions 2 (hosted)
+2023-09-21T14:29:47.7374487Z Current runner version: '2.309.0'
+2023-09-21T14:29:47.7414429Z ##[group]Operating System
+2023-09-21T14:29:47.7415106Z Ubuntu
+2023-09-21T14:29:47.7415513Z 22.04.3
+2023-09-21T14:29:47.7415863Z LTS
+2023-09-21T14:29:47.7416255Z ##[endgroup]
+2023-09-21T14:29:47.7416829Z ##[group]Runner Image
+2023-09-21T14:29:47.7417287Z Image: ubuntu-22.04
+2023-09-21T14:29:47.7417649Z Version: 20230917.1.0
+2023-09-21T14:29:47.7418317Z Included Software: https://github.com/actions/runner-images/blob/ubuntu22/20230917.1/images/linux/Ubuntu2204-Readme.md
+2023-09-21T14:29:47.7419249Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu22%2F20230917.1
+2023-09-21T14:29:47.7419859Z ##[endgroup]
+2023-09-21T14:29:47.7420319Z ##[group]Runner Image Provisioner
+2023-09-21T14:29:47.7421008Z 2.0.299.1
+2023-09-21T14:29:47.7421529Z ##[endgroup]
+2023-09-21T14:29:47.7423500Z ##[group]GITHUB_TOKEN Permissions
+2023-09-21T14:29:47.7426128Z Actions: write
+2023-09-21T14:29:47.7426871Z Checks: write
+2023-09-21T14:29:47.7427706Z Contents: write
+2023-09-21T14:29:47.7428210Z Deployments: write
+2023-09-21T14:29:47.7428627Z Discussions: write
+2023-09-21T14:29:47.7429125Z Issues: write
+2023-09-21T14:29:47.7429500Z Metadata: read
+2023-09-21T14:29:47.7429831Z Packages: write
+2023-09-21T14:29:47.7430388Z Pages: write
+2023-09-21T14:29:47.7430893Z PullRequests: write
+2023-09-21T14:29:47.7431350Z RepositoryProjects: write
+2023-09-21T14:29:47.7431957Z SecurityEvents: write
+2023-09-21T14:29:47.7432302Z Statuses: write
+2023-09-21T14:29:47.7432861Z ##[endgroup]
+2023-09-21T14:29:47.7437331Z Secret source: Actions
+2023-09-21T14:29:47.7437945Z Prepare workflow directory
+2023-09-21T14:29:47.8455179Z Prepare all required actions
+2023-09-21T14:29:47.8858749Z Complete job name: adl-create-repo
+2023-09-21T14:29:48.0735044Z ##[group]Run if [[ wealth = "no-group-provided" ]]
+2023-09-21T14:29:48.0735914Z [36;1mif [[ wealth = "no-group-provided" ]][0m
+2023-09-21T14:29:48.0736445Z [36;1mthen[0m
+2023-09-21T14:29:48.0737091Z [36;1m  echo "Please specify group"[0m
+2023-09-21T14:29:48.0737602Z [36;1m  exit 1[0m
+2023-09-21T14:29:48.0738007Z [36;1mfi[0m
+2023-09-21T14:29:48.0738562Z [36;1mif [[ adl-wealth-developers = "no-team-provided" ]][0m
+2023-09-21T14:29:48.0739102Z [36;1mthen[0m
+2023-09-21T14:29:48.0739694Z [36;1m  echo "Please provide a repository team"[0m
+2023-09-21T14:29:48.0740200Z [36;1m  exit 1[0m
+2023-09-21T14:29:48.0744289Z [36;1mfi[0m
+2023-09-21T14:29:48.0744789Z [36;1mif [[ adl-wealth-approvers = "no-team-provided" ]][0m
+2023-09-21T14:29:48.0745432Z [36;1mthen[0m
+2023-09-21T14:29:48.0745920Z [36;1m  echo "Please provide an approver team"[0m
+2023-09-21T14:29:48.0746429Z [36;1m  exit 1[0m
+2023-09-21T14:29:48.0746818Z [36;1mfi[0m
+2023-09-21T14:29:48.0747611Z [36;1mecho adl[0m
+2023-09-21T14:29:48.0748048Z [36;1mecho wealth[0m
+2023-09-21T14:29:48.0748419Z [36;1mecho dcresearch-etl[0m
+2023-09-21T14:29:48.0748922Z [36;1mecho adl-wealth-approvers[0m
+2023-09-21T14:29:48.0750344Z [36;1mgh repo create AlightEngineering/adl-wealth-dcresearch-etl --internal --template AlightEngineering/adl-dataproduct-template[0m
+2023-09-21T14:29:48.1922343Z shell: /usr/bin/bash -e {0}
+2023-09-21T14:29:48.1922862Z env:
+2023-09-21T14:29:48.1936291Z   GH_TOKEN: ***
+2023-09-21T14:29:48.1936873Z ##[endgroup]
+2023-09-21T14:29:48.2672546Z adl
+2023-09-21T14:29:48.2673461Z wealth
+2023-09-21T14:29:48.2675722Z dcresearch-etl
+2023-09-21T14:29:48.2676412Z adl-wealth-approvers
+2023-09-21T14:29:51.2250687Z https://github.com/AlightEngineering/adl-wealth-dcresearch-etl
+2023-09-21T14:29:51.2531604Z ##[group]Run echo "Sleeping for 120 seconds..."
+2023-09-21T14:29:51.2532343Z [36;1mecho "Sleeping for 120 seconds..."[0m
+2023-09-21T14:29:51.2532930Z [36;1msleep 120[0m
+2023-09-21T14:29:51.2533288Z [36;1mecho "Waking up..."[0m
+2023-09-21T14:29:51.2607982Z shell: /usr/bin/bash -e {0}
+2023-09-21T14:29:51.2608385Z ##[endgroup]
+2023-09-21T14:29:51.2875355Z Sleeping for 120 seconds...
+2023-09-21T14:31:51.2905496Z Waking up...
+2023-09-21T14:31:51.2951309Z ##[group]Run gh secret set REPO_PAT --repo AlightEngineering/adl-wealth-dcresearch-etl --body "${SHARED_REPO_PAT}"
+2023-09-21T14:31:51.2952323Z [36;1mgh secret set REPO_PAT --repo AlightEngineering/adl-wealth-dcresearch-etl --body "${SHARED_REPO_PAT}"[0m
+2023-09-21T14:31:51.3024189Z shell: /usr/bin/bash -e {0}
+2023-09-21T14:31:51.3024509Z env:
+2023-09-21T14:31:51.3025566Z   GH_TOKEN: ***
+2023-09-21T14:31:51.3026480Z   SHARED_REPO_PAT: ***
+2023-09-21T14:31:51.3026824Z ##[endgroup]
+2023-09-21T14:31:51.9417141Z ##[group]Run group_file_content=$(echo wealth |base64)
+2023-09-21T14:31:51.9417908Z [36;1mgroup_file_content=$(echo wealth |base64)[0m
+2023-09-21T14:31:51.9418651Z [36;1mdata="{\"message\":\"Adds group file\",\"committer\":{\"name\":\"David Madison\",\"email\":\"david.madison@alight.com\"},\"content\": \"$(echo ${group_file_content})\"}"[0m
+2023-09-21T14:31:51.9420321Z [36;1mecho $data > curl_data.json[0m
+2023-09-21T14:31:51.9421535Z [36;1mcurl -X PUT -H "Authorization: ***" -H "Accept: application/vnd.github.everest-preview+json" https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/contents/.group -d @curl_data.json[0m
+2023-09-21T14:31:51.9422130Z [36;1mrm curl_data.json[0m
+2023-09-21T14:31:51.9495140Z shell: /usr/bin/bash -e {0}
+2023-09-21T14:31:51.9495432Z ##[endgroup]
+2023-09-21T14:31:51.9757646Z   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+2023-09-21T14:31:51.9760092Z                                  Dload  Upload   Total   Spent    Left  Speed
+2023-09-21T14:31:51.9760367Z 
+2023-09-21T14:31:52.5030489Z   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+2023-09-21T14:31:52.5031552Z 100  2627  100  2500  100   127   4730    240 --:--:-- --:--:-- --:--:--  4984
+2023-09-21T14:31:52.5035440Z {
+2023-09-21T14:31:52.5036032Z   "content": {
+2023-09-21T14:31:52.5090284Z     "name": ".group",
+2023-09-21T14:31:52.5095196Z     "path": ".group",
+2023-09-21T14:31:52.5095547Z     "sha": "7041f99ff1eb580612e89442e4e4bbac504f5ac0",
+2023-09-21T14:31:52.5095876Z     "size": 7,
+2023-09-21T14:31:52.5096628Z     "url": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/contents/.group?ref=master",
+2023-09-21T14:31:52.5097355Z     "html_url": "https://github.com/AlightEngineering/adl-wealth-dcresearch-etl/blob/master/.group",
+2023-09-21T14:31:52.5098356Z     "git_url": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/blobs/7041f99ff1eb580612e89442e4e4bbac504f5ac0",
+2023-09-21T14:31:52.5099611Z     "download_url": "https://raw.githubusercontent.com/AlightEngineering/adl-wealth-dcresearch-etl/master/.group?token=A2XFGB2WE7MQCABZ4HQADNTFBRKBI",
+2023-09-21T14:31:52.5100101Z     "type": "file",
+2023-09-21T14:31:52.5100344Z     "_links": {
+2023-09-21T14:31:52.5100894Z       "self": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/contents/.group?ref=master",
+2023-09-21T14:31:52.5101667Z       "git": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/blobs/7041f99ff1eb580612e89442e4e4bbac504f5ac0",
+2023-09-21T14:31:52.5102351Z       "html": "https://github.com/AlightEngineering/adl-wealth-dcresearch-etl/blob/master/.group"
+2023-09-21T14:31:52.5102723Z     }
+2023-09-21T14:31:52.5102934Z   },
+2023-09-21T14:31:52.5103156Z   "commit": {
+2023-09-21T14:31:52.5103459Z     "sha": "6d33016f0be50a4a0ce4dd96c3b11f407fb66a4a",
+2023-09-21T14:31:52.5103973Z     "node_id": "C_kwDOKWhlONoAKDZkMzMwMTZmMGJlNTBhNGEwY2U0ZGQ5NmMzYjExZjQwN2ZiNjZhNGE",
+2023-09-21T14:31:52.5104811Z     "url": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/commits/6d33016f0be50a4a0ce4dd96c3b11f407fb66a4a",
+2023-09-21T14:31:52.5105600Z     "html_url": "https://github.com/AlightEngineering/adl-wealth-dcresearch-etl/commit/6d33016f0be50a4a0ce4dd96c3b11f407fb66a4a",
+2023-09-21T14:31:52.5106026Z     "author": {
+2023-09-21T14:31:52.5106286Z       "name": "David Madison",
+2023-09-21T14:31:52.5106594Z       "email": "david.madison@alight.com",
+2023-09-21T14:31:52.5106936Z       "date": "2023-09-21T14:31:52Z"
+2023-09-21T14:31:52.5107491Z     },
+2023-09-21T14:31:52.5107880Z     "committer": {
+2023-09-21T14:31:52.5108136Z       "name": "David Madison",
+2023-09-21T14:31:52.5108428Z       "email": "david.madison@alight.com",
+2023-09-21T14:31:52.5108772Z       "date": "2023-09-21T14:31:52Z"
+2023-09-21T14:31:52.5109013Z     },
+2023-09-21T14:31:52.5109222Z     "tree": {
+2023-09-21T14:31:52.5109753Z       "sha": "047d35f532dad72a7d51686397a685e165cce122",
+2023-09-21T14:31:52.5110434Z       "url": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/trees/047d35f532dad72a7d51686397a685e165cce122"
+2023-09-21T14:31:52.5110839Z     },
+2023-09-21T14:31:52.5111066Z     "message": "Adds group file",
+2023-09-21T14:31:52.5111329Z     "parents": [
+2023-09-21T14:31:52.5111554Z       {
+2023-09-21T14:31:52.5111830Z         "sha": "884d87b930dd2dc2238319e046e6152146c12319",
+2023-09-21T14:31:52.5112473Z         "url": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/commits/884d87b930dd2dc2238319e046e6152146c12319",
+2023-09-21T14:31:52.5114306Z         "html_url": "https://github.com/AlightEngineering/adl-wealth-dcresearch-etl/commit/884d87b930dd2dc2238319e046e6152146c12319"
+2023-09-21T14:31:52.5114799Z       }
+2023-09-21T14:31:52.5115023Z     ],
+2023-09-21T14:31:52.5115274Z     "verification": {
+2023-09-21T14:31:52.5115553Z       "verified": false,
+2023-09-21T14:31:52.5115833Z       "reason": "unsigned",
+2023-09-21T14:31:52.5116133Z       "signature": null,
+2023-09-21T14:31:52.5116409Z       "payload": null
+2023-09-21T14:31:52.5116658Z     }
+2023-09-21T14:31:52.5116878Z   }
+2023-09-21T14:31:52.5117078Z }
+2023-09-21T14:31:52.5148310Z ##[group]Run gh api --method PATCH -H "Accept: application/vnd.github+json" /repos/AlightEngineering/adl-wealth-dcresearch-etl -F delete_branch_on_merge=true
+2023-09-21T14:31:52.5149220Z [36;1mgh api --method PATCH -H "Accept: application/vnd.github+json" /repos/AlightEngineering/adl-wealth-dcresearch-etl -F delete_branch_on_merge=true[0m
+2023-09-21T14:31:52.5220464Z shell: /usr/bin/bash -e {0}
+2023-09-21T14:31:52.5220726Z env:
+2023-09-21T14:31:52.5221143Z   GH_TOKEN: ***
+2023-09-21T14:31:52.5221377Z ##[endgroup]
+2023-09-21T14:31:53.0193682Z {"id":694707512,"node_id":"R_kgDOKWhlOA","name":"adl-wealth-dcresearch-etl","full_name":"AlightEngineering/adl-wealth-dcresearch-etl","private":true,"owner":{"login":"AlightEngineering","id":98621508,"node_id":"O_kgDOBeDYRA","avatar_url":"https://avatars.githubusercontent.com/u/98621508?v=4","gravatar_id":"","url":"https://api.github.com/users/AlightEngineering","html_url":"https://github.com/AlightEngineering","followers_url":"https://api.github.com/users/AlightEngineering/followers","following_url":"https://api.github.com/users/AlightEngineering/following{/other_user}","gists_url":"https://api.github.com/users/AlightEngineering/gists{/gist_id}","starred_url":"https://api.github.com/users/AlightEngineering/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/AlightEngineering/subscriptions","organizations_url":"https://api.github.com/users/AlightEngineering/orgs","repos_url":"https://api.github.com/users/AlightEngineering/repos","events_url":"https://api.github.com/users/AlightEngineering/events{/privacy}","received_events_url":"https://api.github.com/users/AlightEngineering/received_events","type":"Organization","site_admin":false},"html_url":"https://github.com/AlightEngineering/adl-wealth-dcresearch-etl","description":null,"fork":false,"url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl","forks_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/forks","keys_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/keys{/key_id}","collaborators_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/collaborators{/collaborator}","teams_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/teams","hooks_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/hooks","issue_events_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/issues/events{/number}","events_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/events","assignees_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/assignees{/user}","branches_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/branches{/branch}","tags_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/tags","blobs_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/blobs{/sha}","git_tags_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/tags{/sha}","git_refs_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/refs{/sha}","trees_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/trees{/sha}","statuses_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/statuses/{sha}","languages_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/languages","stargazers_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/stargazers","contributors_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/contributors","subscribers_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/subscribers","subscription_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/subscription","commits_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/commits{/sha}","git_commits_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/commits{/sha}","comments_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/comments{/number}","issue_comment_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/issues/comments{/number}","contents_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/contents/{+path}","compare_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/compare/{base}...{head}","merges_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/merges","archive_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/{archive_format}{/ref}","downloads_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/downloads","issues_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/issues{/number}","pulls_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/pulls{/number}","milestones_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/milestones{/number}","notifications_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/notifications{?since,all,participating}","labels_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/labels{/name}","releases_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/releases{/id}","deployments_url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/deployments","created_at":"2023-09-21T14:29:49Z","updated_at":"2023-09-21T14:29:56Z","pushed_at":"2023-09-21T14:31:52Z","git_url":"git://github.com/AlightEngineering/adl-wealth-dcresearch-etl.git","ssh_url":"git@github.com:AlightEngineering/adl-wealth-dcresearch-etl.git","clone_url":"https://github.com/AlightEngineering/adl-wealth-dcresearch-etl.git","svn_url":"https://github.com/AlightEngineering/adl-wealth-dcresearch-etl","homepage":null,"size":0,"stargazers_count":0,"watchers_count":0,"language":"Shell","has_issues":true,"has_projects":true,"has_downloads":true,"has_wiki":true,"has_pages":false,"has_discussions":false,"forks_count":0,"mirror_url":null,"archived":false,"disabled":false,"open_issues_count":0,"license":null,"allow_forking":false,"is_template":false,"web_commit_signoff_required":false,"topics":[],"visibility":"internal","forks":0,"open_issues":0,"watchers":0,"default_branch":"master","permissions":{"admin":true,"maintain":true,"push":true,"triage":true,"pull":true},"allow_squash_merge":true,"allow_merge_commit":true,"allow_rebase_merge":true,"allow_auto_merge":false,"delete_branch_on_merge":true,"allow_update_branch":false,"use_squash_pr_title_as_default":false,"squash_merge_commit_message":"COMMIT_MESSAGES","squash_merge_commit_title":"COMMIT_OR_PR_TITLE","merge_commit_message":"PR_TITLE","merge_commit_title":"MERGE_MESSAGE","organization":{"login":"AlightEngineering","id":98621508,"node_id":"O_kgDOBeDYRA","avatar_url":"https://avatars.githubusercontent.com/u/98621508?v=4","gravatar_id":"","url":"https://api.github.com/users/AlightEngineering","html_url":"https://github.com/AlightEngineering","followers_url":"https://api.github.com/users/AlightEngineering/followers","following_url":"https://api.github.com/users/AlightEngineering/following{/other_user}","gists_url":"https://api.github.com/users/AlightEngineering/gists{/gist_id}","starred_url":"https://api.github.com/users/AlightEngineering/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/AlightEngineering/subscriptions","organizations_url":"https://api.github.com/users/AlightEngineering/orgs","repos_url":"https://api.github.com/users/AlightEngineering/repos","events_url":"https://api.github.com/users/AlightEngineering/events{/privacy}","received_events_url":"https://api.github.com/users/AlightEngineering/received_events","type":"Organization","site_admin":false},"security_and_analysis":{"secret_scanning":{"status":"disabled"},"secret_scanning_push_protection":{"status":"disabled"},"dependabot_security_updates":{"status":"disabled"}},"network_count":0,"subscribers_count":1}
+2023-09-21T14:31:53.0251335Z ##[group]Run gh api --method PUT -H "Accept: application/vnd.github+json" /orgs/AlightEngineering/teams/adl-core-admins/repos/AlightEngineering/adl-wealth-dcresearch-etl -f permission='admin'
+2023-09-21T14:31:53.0252305Z [36;1mgh api --method PUT -H "Accept: application/vnd.github+json" /orgs/AlightEngineering/teams/adl-core-admins/repos/AlightEngineering/adl-wealth-dcresearch-etl -f permission='admin'[0m
+2023-09-21T14:31:53.0333547Z shell: /usr/bin/bash -e {0}
+2023-09-21T14:31:53.0333825Z env:
+2023-09-21T14:31:53.0334271Z   GH_TOKEN: ***
+2023-09-21T14:31:53.0334507Z ##[endgroup]
+2023-09-21T14:31:53.6315829Z ##[group]Run gh api --method PUT -H "Accept: application/vnd.github+json" /orgs/AlightEngineering/teams/adl-wealth-developers/repos/AlightEngineering/adl-wealth-dcresearch-etl -f permission='push'
+2023-09-21T14:31:53.6316705Z [36;1mgh api --method PUT -H "Accept: application/vnd.github+json" /orgs/AlightEngineering/teams/adl-wealth-developers/repos/AlightEngineering/adl-wealth-dcresearch-etl -f permission='push'[0m
+2023-09-21T14:31:53.6385543Z shell: /usr/bin/bash -e {0}
+2023-09-21T14:31:53.6385802Z env:
+2023-09-21T14:31:53.6386215Z   GH_TOKEN: ***
+2023-09-21T14:31:53.6386454Z ##[endgroup]
+2023-09-21T14:31:54.2262793Z ##[group]Run gh api --method PUT -H "Accept: application/vnd.github+json" /orgs/AlightEngineering/teams/adl-wealth-approvers/repos/AlightEngineering/adl-wealth-dcresearch-etl -f permission='push'
+2023-09-21T14:31:54.2263882Z [36;1mgh api --method PUT -H "Accept: application/vnd.github+json" /orgs/AlightEngineering/teams/adl-wealth-approvers/repos/AlightEngineering/adl-wealth-dcresearch-etl -f permission='push'[0m
+2023-09-21T14:31:54.2353484Z shell: /usr/bin/bash -e {0}
+2023-09-21T14:31:54.2353769Z env:
+2023-09-21T14:31:54.2354346Z   GH_TOKEN: ***
+2023-09-21T14:31:54.2354590Z ##[endgroup]
+2023-09-21T14:31:54.8994932Z ##[group]Run git clone -b master --single-branch https://${github_user}:${GH_TOKEN}@github.com/AlightEngineering/adl-awsdeploy-cicd.git
+2023-09-21T14:31:54.9026197Z [36;1mgit clone -b master --single-branch https://${github_user}:${GH_TOKEN}@github.com/AlightEngineering/adl-awsdeploy-cicd.git[0m
+2023-09-21T14:31:54.9026748Z [36;1mrepo_base=$(pwd)/adl-awsdeploy-cicd[0m
+2023-09-21T14:31:54.9027651Z [36;1mexport PYTHONPATH=${repo_base}/src[0m
+2023-09-21T14:31:54.9028011Z [36;1mpip install -r ${repo_base}/requirements.txt[0m
+2023-09-21T14:31:54.9028417Z [36;1mls -l ${repo_base}/.github/data/CODEOWNERS.template[0m
+2023-09-21T14:31:54.9029503Z [36;1mpython ${repo_base}/src/alight/foundation/app/generatetemplate.py --base-arg-parser-config-file-location ${repo_base}/config --base-arg-parser-config-file-name generate-template-build-args.json --template-root-location ${repo_base}/.github/data --template-file-name CODEOWNERS.template --generated-script-file-location ${repo_base} --generated-script-file-name CODEOWNERS_MASTER_QA \[0m
+2023-09-21T14:31:54.9030638Z [36;1m--cicdvar "CODE_OWNER_TEAM_NAME=adl-wealth-developers" \[0m
+2023-09-21T14:31:54.9031209Z [36;1m--cicdvar "ADMIN_TEAM_NAME=adl-core-admins"       [0m
+2023-09-21T14:31:54.9031673Z [36;1m[0m
+2023-09-21T14:31:54.9032575Z [36;1mpython ${repo_base}/src/alight/foundation/app/generatetemplate.py --base-arg-parser-config-file-location ${repo_base}/config --base-arg-parser-config-file-name generate-template-build-args.json --template-root-location ${repo_base}/.github/data --template-file-name CODEOWNERS.template --generated-script-file-location ${repo_base} --generated-script-file-name CODEOWNERS_QC_PROD \[0m
+2023-09-21T14:31:54.9033588Z [36;1m--cicdvar "CODE_OWNER_TEAM_NAME=adl-wealth-approvers" \[0m
+2023-09-21T14:31:54.9033990Z [36;1m--cicdvar "ADMIN_TEAM_NAME=adl-core-admins"[0m
+2023-09-21T14:31:54.9034286Z [36;1m[0m
+2023-09-21T14:31:54.9034525Z [36;1msleep 5[0m
+2023-09-21T14:31:54.9035159Z [36;1mexport last_sha=$(gh api --method GET -H "Accept: application/vnd.github+json" /repos/AlightEngineering/adl-wealth-dcresearch-etl/contents/CODEOWNERS -f ref="master" | jq | grep sha | cut -f2 -d":" | tr ',' ' ' | tr -d '"')[0m
+2023-09-21T14:31:54.9035825Z [36;1m[0m
+2023-09-21T14:31:54.9036045Z [36;1msleep 5[0m
+2023-09-21T14:31:54.9036407Z [36;1mcode_owners_content=$(cat ${repo_base}/CODEOWNERS_MASTER_QA |base64 -w 0)[0m
+2023-09-21T14:31:54.9037188Z [36;1mcode_owners_data="{\"message\":\"Updates CODEOWNERS file on master branch\",\"committer\":{\"name\":\"David Madison\",\"email\":\"david.madison@alight.com\"},\"content\": \"$(echo ${code_owners_content})\",\"branch\": \"master\",\"sha\": \"$(echo ${last_sha})\"}"[0m
+2023-09-21T14:31:54.9037915Z [36;1mecho $code_owners_data > code_owners_data.json[0m
+2023-09-21T14:31:54.9038216Z [36;1m[0m
+2023-09-21T14:31:54.9038454Z [36;1msleep 5[0m
+2023-09-21T14:31:54.9038718Z [36;1mcurl -X PUT \[0m
+2023-09-21T14:31:54.9039410Z [36;1m-H "Authorization: ***" -H "Accept: application/vnd.github+json" \[0m
+2023-09-21T14:31:54.9039969Z [36;1mhttps://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/contents/CODEOWNERS \[0m
+2023-09-21T14:31:54.9040562Z [36;1m-d @code_owners_data.json [0m
+2023-09-21T14:31:54.9124091Z shell: /usr/bin/bash -e {0}
+2023-09-21T14:31:54.9124366Z env:
+2023-09-21T14:31:54.9124786Z   github_user: ***
+2023-09-21T14:31:54.9125198Z   GH_TOKEN: ***
+2023-09-21T14:31:54.9125433Z ##[endgroup]
+2023-09-21T14:31:54.9418912Z Cloning into 'adl-awsdeploy-cicd'...
+2023-09-21T14:31:58.4995517Z Defaulting to user installation because normal site-packages is not writeable
+2023-09-21T14:32:00.1343947Z Collecting boto3
+2023-09-21T14:32:00.2432760Z   Downloading boto3-1.28.52-py3-none-any.whl (135 kB)
+2023-09-21T14:32:00.3084433Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 135.8/135.8 KB 2.1 MB/s eta 0:00:00
+2023-09-21T14:32:00.3152744Z Requirement already satisfied: requests in /usr/lib/python3/dist-packages (from -r /home/runner/work/adl-awsdeploy-cicd/adl-awsdeploy-cicd/adl-awsdeploy-cicd/requirements.txt (line 2)) (2.25.1)
+2023-09-21T14:32:00.3156391Z Requirement already satisfied: pyyaml in /usr/lib/python3/dist-packages (from -r /home/runner/work/adl-awsdeploy-cicd/adl-awsdeploy-cicd/adl-awsdeploy-cicd/requirements.txt (line 3)) (5.4.1)
+2023-09-21T14:32:00.3170275Z Requirement already satisfied: Jinja2==3.0.3 in /usr/lib/python3/dist-packages (from -r /home/runner/work/adl-awsdeploy-cicd/adl-awsdeploy-cicd/adl-awsdeploy-cicd/requirements.txt (line 4)) (3.0.3)
+2023-09-21T14:32:01.2287350Z Collecting botocore<1.32.0,>=1.31.52
+2023-09-21T14:32:01.2335490Z   Downloading botocore-1.31.52-py3-none-any.whl (11.2 MB)
+2023-09-21T14:32:01.4059612Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 11.2/11.2 MB 70.1 MB/s eta 0:00:00
+2023-09-21T14:32:01.4935181Z Collecting s3transfer<0.7.0,>=0.6.0
+2023-09-21T14:32:01.4982334Z   Downloading s3transfer-0.6.2-py3-none-any.whl (79 kB)
+2023-09-21T14:32:01.5065378Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 79.8/79.8 KB 13.7 MB/s eta 0:00:00
+2023-09-21T14:32:01.5369422Z Collecting jmespath<2.0.0,>=0.7.1
+2023-09-21T14:32:01.5427685Z   Downloading jmespath-1.0.1-py3-none-any.whl (20 kB)
+2023-09-21T14:32:01.5920324Z Collecting python-dateutil<3.0.0,>=2.1
+2023-09-21T14:32:01.5970702Z   Downloading python_dateutil-2.8.2-py2.py3-none-any.whl (247 kB)
+2023-09-21T14:32:01.6066673Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 247.7/247.7 KB 37.9 MB/s eta 0:00:00
+2023-09-21T14:32:01.6105955Z Requirement already satisfied: urllib3<1.27,>=1.25.4 in /usr/lib/python3/dist-packages (from botocore<1.32.0,>=1.31.52->boto3->-r /home/runner/work/adl-awsdeploy-cicd/adl-awsdeploy-cicd/adl-awsdeploy-cicd/requirements.txt (line 1)) (1.26.5)
+2023-09-21T14:32:01.9355489Z Requirement already satisfied: six>=1.5 in /usr/lib/python3/dist-packages (from python-dateutil<3.0.0,>=2.1->botocore<1.32.0,>=1.31.52->boto3->-r /home/runner/work/adl-awsdeploy-cicd/adl-awsdeploy-cicd/adl-awsdeploy-cicd/requirements.txt (line 1)) (1.16.0)
+2023-09-21T14:32:02.1753094Z Installing collected packages: python-dateutil, jmespath, botocore, s3transfer, boto3
+2023-09-21T14:32:03.5271591Z Successfully installed boto3-1.28.52 botocore-1.31.52 jmespath-1.0.1 python-dateutil-2.8.2 s3transfer-0.6.2
+2023-09-21T14:32:03.6839831Z -rw-r--r-- 1 runner docker 705 Sep 21 14:31 /home/runner/work/adl-awsdeploy-cicd/adl-awsdeploy-cicd/adl-awsdeploy-cicd/.github/data/CODEOWNERS.template
+2023-09-21T14:32:03.7963022Z [2023-09-21 14:32:03,795] [generatetemplate] [consolelogger] [<module>:13] [INFO]: "The generated file is:"
+2023-09-21T14:32:03.7964099Z [2023-09-21 14:32:03,796] [generatetemplate] [consolelogger] [<module>:14] [INFO]: "# This is the initial code owners file
+2023-09-21T14:32:03.7964615Z # The CODEOWNERS file will be added to the .gitignore
+2023-09-21T14:32:03.7965056Z # file, so that each branch of a repository can have
+2023-09-21T14:32:03.7965441Z # separate lists of owners.
+2023-09-21T14:32:03.7965848Z # The combination of making the admin team the code owners
+2023-09-21T14:32:03.7966310Z # of the CODEOWNERS file and the .gitignore file
+2023-09-21T14:32:03.7966740Z # makes it impossible for anyone to change these files
+2023-09-21T14:32:03.7967201Z # without the expressed approval of someone from the admin team
+2023-09-21T14:32:03.7968753Z * @AlightEngineering/adl-wealth-developers
+2023-09-21T14:32:03.7970588Z CODEOWNERS @AlightEngineering/adl-core-admins
+2023-09-21T14:32:03.7971288Z docs/CODEOWNERS @AlightEngineering/adl-core-admins
+2023-09-21T14:32:03.7971872Z .github/CODEOWNERS @AlightEngineering/adl-core-admins
+2023-09-21T14:32:03.7973285Z .gitignore @AlightEngineering/adl-core-admins
+2023-09-21T14:32:03.7973724Z .group @AlightEngineering/adl-core-admins"
+2023-09-21T14:32:03.7974278Z [2023-09-21 14:32:03,796] [generatetemplate] [consolelogger] [<module>:15] [INFO]: "End generate file"
+2023-09-21T14:32:03.9317108Z [2023-09-21 14:32:03,930] [generatetemplate] [consolelogger] [<module>:13] [INFO]: "The generated file is:"
+2023-09-21T14:32:03.9318262Z [2023-09-21 14:32:03,930] [generatetemplate] [consolelogger] [<module>:14] [INFO]: "# This is the initial code owners file
+2023-09-21T14:32:03.9318790Z # The CODEOWNERS file will be added to the .gitignore
+2023-09-21T14:32:03.9319274Z # file, so that each branch of a repository can have
+2023-09-21T14:32:03.9319626Z # separate lists of owners.
+2023-09-21T14:32:03.9319992Z # The combination of making the admin team the code owners
+2023-09-21T14:32:03.9320586Z # of the CODEOWNERS file and the .gitignore file
+2023-09-21T14:32:03.9320978Z # makes it impossible for anyone to change these files
+2023-09-21T14:32:03.9321404Z # without the expressed approval of someone from the admin team
+2023-09-21T14:32:03.9322041Z * @AlightEngineering/adl-wealth-approvers
+2023-09-21T14:32:03.9322466Z CODEOWNERS @AlightEngineering/adl-core-admins
+2023-09-21T14:32:03.9322891Z docs/CODEOWNERS @AlightEngineering/adl-core-admins
+2023-09-21T14:32:03.9323343Z .github/CODEOWNERS @AlightEngineering/adl-core-admins
+2023-09-21T14:32:03.9323780Z .gitignore @AlightEngineering/adl-core-admins
+2023-09-21T14:32:03.9324376Z .group @AlightEngineering/adl-core-admins"
+2023-09-21T14:32:03.9325101Z [2023-09-21 14:32:03,930] [generatetemplate] [consolelogger] [<module>:15] [INFO]: "End generate file"
+2023-09-21T14:32:19.3667851Z   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+2023-09-21T14:32:19.3668732Z                                  Dload  Upload   Total   Spent    Left  Speed
+2023-09-21T14:32:19.3669488Z 
+2023-09-21T14:32:19.9731948Z   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+2023-09-21T14:32:19.9733569Z 100  3676  100  2555  100  1121   4196   1841 --:--:-- --:--:-- --:--:--  6046
+2023-09-21T14:32:19.9733820Z {
+2023-09-21T14:32:19.9735139Z 100  3676  100  2555  100  1121   4196   1840 --:--:-- --:--:-- --:--:--  6046
+2023-09-21T14:32:19.9735593Z   "content": {
+2023-09-21T14:32:19.9736060Z     "name": "CODEOWNERS",
+2023-09-21T14:32:19.9736421Z     "path": "CODEOWNERS",
+2023-09-21T14:32:19.9736842Z     "sha": "bb8678b1c9935e043c5e5b14eac2721a11000f8c",
+2023-09-21T14:32:19.9737193Z     "size": 682,
+2023-09-21T14:32:19.9738016Z     "url": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/contents/CODEOWNERS?ref=master",
+2023-09-21T14:32:19.9738772Z     "html_url": "https://github.com/AlightEngineering/adl-wealth-dcresearch-etl/blob/master/CODEOWNERS",
+2023-09-21T14:32:19.9739674Z     "git_url": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/blobs/bb8678b1c9935e043c5e5b14eac2721a11000f8c",
+2023-09-21T14:32:19.9740931Z     "download_url": "https://raw.githubusercontent.com/AlightEngineering/adl-wealth-dcresearch-etl/master/CODEOWNERS?token=A2XFGB6QZVY67CPM76DDJ73FBRKC6",
+2023-09-21T14:32:19.9741652Z     "type": "file",
+2023-09-21T14:32:19.9742067Z     "_links": {
+2023-09-21T14:32:19.9742903Z       "self": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/contents/CODEOWNERS?ref=master",
+2023-09-21T14:32:19.9743730Z       "git": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/blobs/bb8678b1c9935e043c5e5b14eac2721a11000f8c",
+2023-09-21T14:32:19.9744647Z       "html": "https://github.com/AlightEngineering/adl-wealth-dcresearch-etl/blob/master/CODEOWNERS"
+2023-09-21T14:32:19.9745098Z     }
+2023-09-21T14:32:19.9745376Z   },
+2023-09-21T14:32:19.9745663Z   "commit": {
+2023-09-21T14:32:19.9746023Z     "sha": "6286b66e37af621551f0257d29da5395b09c93c0",
+2023-09-21T14:32:19.9746660Z     "node_id": "C_kwDOKWhlONoAKDYyODZiNjZlMzdhZjYyMTU1MWYwMjU3ZDI5ZGE1Mzk1YjA5YzkzYzA",
+2023-09-21T14:32:19.9747534Z     "url": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/commits/6286b66e37af621551f0257d29da5395b09c93c0",
+2023-09-21T14:32:19.9748895Z     "html_url": "https://github.com/AlightEngineering/adl-wealth-dcresearch-etl/commit/6286b66e37af621551f0257d29da5395b09c93c0",
+2023-09-21T14:32:19.9749397Z     "author": {
+2023-09-21T14:32:19.9749751Z       "name": "David Madison",
+2023-09-21T14:32:19.9750947Z       "email": "david.madison@alight.com",
+2023-09-21T14:32:19.9752264Z       "date": "2023-09-21T14:32:19Z"
+2023-09-21T14:32:19.9752677Z     },
+2023-09-21T14:32:19.9752897Z     "committer": {
+2023-09-21T14:32:19.9753139Z       "name": "David Madison",
+2023-09-21T14:32:19.9753433Z       "email": "david.madison@alight.com",
+2023-09-21T14:32:19.9753931Z       "date": "2023-09-21T14:32:19Z"
+2023-09-21T14:32:19.9754410Z     },
+2023-09-21T14:32:19.9754617Z     "tree": {
+2023-09-21T14:32:19.9754880Z       "sha": "83afcd68167399f949e280b1b212d118c01b3e97",
+2023-09-21T14:32:19.9755600Z       "url": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/trees/83afcd68167399f949e280b1b212d118c01b3e97"
+2023-09-21T14:32:19.9756298Z     },
+2023-09-21T14:32:19.9756617Z     "message": "Updates CODEOWNERS file on master branch",
+2023-09-21T14:32:19.9756947Z     "parents": [
+2023-09-21T14:32:19.9757167Z       {
+2023-09-21T14:32:19.9757473Z         "sha": "6d33016f0be50a4a0ce4dd96c3b11f407fb66a4a",
+2023-09-21T14:32:19.9758214Z         "url": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/commits/6d33016f0be50a4a0ce4dd96c3b11f407fb66a4a",
+2023-09-21T14:32:19.9759056Z         "html_url": "https://github.com/AlightEngineering/adl-wealth-dcresearch-etl/commit/6d33016f0be50a4a0ce4dd96c3b11f407fb66a4a"
+2023-09-21T14:32:19.9759496Z       }
+2023-09-21T14:32:19.9759714Z     ],
+2023-09-21T14:32:19.9759947Z     "verification": {
+2023-09-21T14:32:19.9760221Z       "verified": false,
+2023-09-21T14:32:19.9760495Z       "reason": "unsigned",
+2023-09-21T14:32:19.9760771Z       "signature": null,
+2023-09-21T14:32:19.9761040Z       "payload": null
+2023-09-21T14:32:19.9761620Z     }
+2023-09-21T14:32:19.9761887Z   }
+2023-09-21T14:32:19.9762102Z }
+2023-09-21T14:32:19.9807885Z ##[group]Run sleep 60
+2023-09-21T14:32:19.9808339Z [36;1msleep 60[0m
+2023-09-21T14:32:19.9809080Z [36;1mexport last_sha=$(gh api --method GET -H "Accept: application/vnd.github+json" /repos/AlightEngineering/adl-wealth-dcresearch-etl/git/refs/heads/master | jq | grep sha | cut -f2 -d":" | tr ',' ' ' | tr -d '"')[0m
+2023-09-21T14:32:19.9810084Z [36;1mgh api --method POST -H "Accept: application/vnd.github+json" /repos/AlightEngineering/adl-wealth-dcresearch-etl/git/refs -f ref='refs/heads/release/qa' -f sha=$(echo ${last_sha})[0m
+2023-09-21T14:32:19.9810572Z [36;1msleep 5        [0m
+2023-09-21T14:32:19.9811111Z [36;1mexport last_sha=$(gh api --method GET -H "Accept: application/vnd.github+json" /repos/AlightEngineering/adl-wealth-dcresearch-etl/git/refs/heads/release/qa | jq | grep sha | cut -f2 -d":" | tr ',' ' ' | tr -d '"')[0m
+2023-09-21T14:32:19.9811955Z [36;1mgh api --method POST -H "Accept: application/vnd.github+json" /repos/AlightEngineering/adl-wealth-dcresearch-etl/git/refs -f ref='refs/heads/release/qc' -f sha=$(echo ${last_sha})[0m
+2023-09-21T14:32:19.9812438Z [36;1msleep 5        [0m
+2023-09-21T14:32:19.9885468Z shell: /usr/bin/bash -e {0}
+2023-09-21T14:32:19.9885723Z env:
+2023-09-21T14:32:19.9886273Z   GH_TOKEN: ***
+2023-09-21T14:32:19.9886511Z ##[endgroup]
+2023-09-21T14:33:31.7427873Z {"ref":"refs/heads/release/qa","node_id":"REF_kwDOKWhlOLVyZWZzL2hlYWRzL3JlbGVhc2UvcWE","url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/refs/heads/release/qa","object":{"sha":"6286b66e37af621551f0257d29da5395b09c93c0","type":"commit","url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/commits/6286b66e37af621551f0257d29da5395b09c93c0"}}{"ref":"refs/heads/release/qc","node_id":"REF_kwDOKWhlOLVyZWZzL2hlYWRzL3JlbGVhc2UvcWM","url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/refs/heads/release/qc","object":{"sha":"6286b66e37af621551f0257d29da5395b09c93c0","type":"commit","url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/commits/6286b66e37af621551f0257d29da5395b09c93c0"}}
+2023-09-21T14:33:31.7462585Z ##[group]Run sleep 5
+2023-09-21T14:33:31.7463112Z [36;1msleep 5[0m
+2023-09-21T14:33:31.7463861Z [36;1mexport last_sha=$(gh api --method GET -H "Accept: application/vnd.github+json" /repos/AlightEngineering/adl-wealth-dcresearch-etl/contents/CODEOWNERS | jq | grep sha | cut -f2 -d":" | tr ',' ' ' | tr -d '"')[0m
+2023-09-21T14:33:31.7464408Z [36;1m[0m
+2023-09-21T14:33:31.7464805Z [36;1msleep 5[0m
+2023-09-21T14:33:31.7465489Z [36;1mrepo_base=$(pwd)/adl-awsdeploy-cicd[0m
+2023-09-21T14:33:31.7466140Z [36;1mcode_owners_content=$(cat ${repo_base}/CODEOWNERS_QC_PROD |base64 -w 0)[0m
+2023-09-21T14:33:31.7467232Z [36;1mcode_owners_data="{\"message\":\"Updates CODEOWNERS file on release/qc branch\",\"committer\":{\"name\":\"David Madison\",\"email\":\"david.madison@alight.com\"},\"content\": \"$(echo ${code_owners_content})\",\"branch\": \"release/qc\",\"sha\": \"$(echo ${last_sha})\"}"[0m
+2023-09-21T14:33:31.7467926Z [36;1mecho $code_owners_data > code_owners_data.json[0m
+2023-09-21T14:33:31.7468256Z [36;1m[0m
+2023-09-21T14:33:31.7468489Z [36;1msleep 5[0m
+2023-09-21T14:33:31.7468740Z [36;1mcurl -X PUT \[0m
+2023-09-21T14:33:31.7469339Z [36;1m-H "Authorization: ***" -H "Accept: application/vnd.github+json" \[0m
+2023-09-21T14:33:31.7470340Z [36;1mhttps://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/contents/CODEOWNERS \[0m
+2023-09-21T14:33:31.7470936Z [36;1m-d @code_owners_data.json [0m
+2023-09-21T14:33:31.7471209Z [36;1m[0m
+2023-09-21T14:33:31.7471425Z [36;1msleep 15[0m
+2023-09-21T14:33:31.7472008Z [36;1mexport last_sha=$(gh api --method GET -H "Accept: application/vnd.github+json" /repos/AlightEngineering/adl-wealth-dcresearch-etl/git/refs/heads/release/qc | jq | grep sha | cut -f2 -d":" | tr ',' ' ' | tr -d '"')[0m
+2023-09-21T14:33:31.7472832Z [36;1mgh api --method POST -H "Accept: application/vnd.github+json" /repos/AlightEngineering/adl-wealth-dcresearch-etl/git/refs -f ref='refs/heads/release/prod' -f sha=$(echo ${last_sha})[0m
+2023-09-21T14:33:31.7473849Z [36;1m[0m
+2023-09-21T14:33:31.7474086Z [36;1msleep 5[0m
+2023-09-21T14:33:31.7474677Z [36;1mexport last_sha=$(gh api --method GET -H "Accept: application/vnd.github+json" /repos/AlightEngineering/adl-wealth-dcresearch-etl/contents/CODEOWNERS -f ref="release/prod" | jq | grep sha | cut -f2 -d":" | tr ',' ' ' | tr -d '"')[0m
+2023-09-21T14:33:31.7475247Z [36;1m[0m
+2023-09-21T14:33:31.7475630Z [36;1msleep 5[0m
+2023-09-21T14:33:31.7475960Z [36;1mcode_owners_content=$(cat ${repo_base}/CODEOWNERS_QC_PROD |base64 -w 0)[0m
+2023-09-21T14:33:31.7476714Z [36;1mcode_owners_data="{\"message\":\"Updates CODEOWNERS file on release/prod branch\",\"committer\":{\"name\":\"David Madison\",\"email\":\"david.madison@alight.com\"},\"content\": \"$(echo ${code_owners_content})\",\"branch\": \"release/prod\",\"sha\": \"$(echo ${last_sha})\"}"[0m
+2023-09-21T14:33:31.7477654Z [36;1mecho $code_owners_data > code_owners_data.json[0m
+2023-09-21T14:33:31.7477962Z [36;1m[0m
+2023-09-21T14:33:31.7478210Z [36;1msleep 5[0m
+2023-09-21T14:33:31.7478477Z [36;1mcurl -X PUT \[0m
+2023-09-21T14:33:31.7479058Z [36;1m-H "Authorization: ***" -H "Accept: application/vnd.github+json" \[0m
+2023-09-21T14:33:31.7479611Z [36;1mhttps://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/contents/CODEOWNERS \[0m
+2023-09-21T14:33:31.7480085Z [36;1m-d @code_owners_data.json         [0m
+2023-09-21T14:33:31.7480353Z [36;1m[0m
+2023-09-21T14:33:31.7480594Z [36;1msleep 20[0m
+2023-09-21T14:33:31.7556485Z shell: /usr/bin/bash -e {0}
+2023-09-21T14:33:31.7556741Z env:
+2023-09-21T14:33:31.7557049Z   github_user: ***
+2023-09-21T14:33:31.7557422Z   GH_TOKEN: ***
+2023-09-21T14:33:31.7557665Z ##[endgroup]
+2023-09-21T14:33:47.1700502Z   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+2023-09-21T14:33:47.1703759Z                                  Dload  Upload   Total   Spent    Left  Speed
+2023-09-21T14:33:47.1704250Z 
+2023-09-21T14:33:47.7407698Z   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+2023-09-21T14:33:47.7408100Z {
+2023-09-21T14:33:47.7408546Z   "content": {
+2023-09-21T14:33:47.7408962Z     "name": "CODEOWNERS",
+2023-09-21T14:33:47.7409610Z     "path": "CODEOWNERS",
+2023-09-21T14:33:47.7409955Z     "sha": "707476204bded06d65d456fb8078e69db4d49633",
+2023-09-21T14:33:47.7410262Z     "size": 681,
+2023-09-21T14:33:47.7410933Z     "url": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/contents/CODEOWNERS?ref=release/qc",
+2023-09-21T14:33:47.7411764Z     "html_url": "https://github.com/AlightEngineering/adl-wealth-dcresearch-etl/blob/release/qc/CODEOWNERS",
+2023-09-21T14:33:47.7413020Z     "git_url": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/blobs/707476204bded06d65d456fb8078e69db4d49633",
+2023-09-21T14:33:47.7414116Z     "download_url": "https://raw.githubusercontent.com/AlightEngineering/adl-wealth-dcresearch-etl/release/qc/CODEOWNERS?token=A2XFGBZCV5BST6B6BPKFXSTFBRKIO",
+2023-09-21T14:33:47.7414807Z     "type": "file",
+2023-09-21T14:33:47.7415058Z     "_links": {
+2023-09-21T14:33:47.7415637Z       "self": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/contents/CODEOWNERS?ref=release/qc",
+2023-09-21T14:33:47.7416448Z       "git": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/blobs/707476204bded06d65d456fb8078e69db4d49633",
+2023-09-21T14:33:47.7417366Z       "html": "https://github.com/AlightEngineering/adl-wealth-dcresearch-etl/blob/release/qc/CODEOWNERS"
+2023-09-21T14:33:47.7417760Z     }
+2023-09-21T14:33:47.7417982Z   },
+2023-09-21T14:33:47.7418215Z   "commit": {
+2023-09-21T14:33:47.7418518Z     "sha": "4201305a7c7dc2135592836f2aa5237f77d253e8",
+2023-09-21T14:33:47.7419344Z     "node_id": "C_kwDOKWhlONoAKDQyMDEzMDVhN2M3ZGMyMTM1NTkyODM2ZjJhYTUyMzdmNzdkMjUzZTg",
+2023-09-21T14:33:47.7420211Z     "url": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/commits/4201305a7c7dc2135592836f2aa5237f77d253e8",
+2023-09-21T14:33:47.7420981Z     "html_url": "https://github.com/AlightEngineering/adl-wealth-dcresearch-etl/commit/4201305a7c7dc2135592836f2aa5237f77d253e8",
+2023-09-21T14:33:47.7421387Z     "author": {
+2023-09-21T14:33:47.7421644Z       "name": "David Madison",
+2023-09-21T14:33:47.7421947Z       "email": "david.madison@alight.com",
+2023-09-21T14:33:47.7422538Z       "date": "2023-09-21T14:33:47Z"
+2023-09-21T14:33:47.7422761Z     },
+2023-09-21T14:33:47.7422982Z     "committer": {
+2023-09-21T14:33:47.7423231Z       "name": "David Madison",
+2023-09-21T14:33:47.7423521Z       "email": "david.madison@alight.com",
+2023-09-21T14:33:47.7423859Z       "date": "2023-09-21T14:33:47Z"
+2023-09-21T14:33:47.7424081Z     },
+2023-09-21T14:33:47.7424758Z     "tree": {
+2023-09-21T14:33:47.7426232Z 100  3704  100  2579  100  1125   4515   1969 --:--:-- --:--:-- --:--:--  6498
+2023-09-21T14:33:47.7426572Z       "sha": "aec7026505b52bbd6d05e5bf7c77c022c0769d6b",
+2023-09-21T14:33:47.7427450Z       "url": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/trees/aec7026505b52bbd6d05e5bf7c77c022c0769d6b"
+2023-09-21T14:33:47.7428474Z     },
+2023-09-21T14:33:47.7428777Z     "message": "Updates CODEOWNERS file on release/qc branch",
+2023-09-21T14:33:47.7429235Z     "parents": [
+2023-09-21T14:33:47.7429463Z       {
+2023-09-21T14:33:47.7429748Z         "sha": "6286b66e37af621551f0257d29da5395b09c93c0",
+2023-09-21T14:33:47.7431075Z         "url": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/commits/6286b66e37af621551f0257d29da5395b09c93c0",
+2023-09-21T14:33:47.7431852Z         "html_url": "https://github.com/AlightEngineering/adl-wealth-dcresearch-etl/commit/6286b66e37af621551f0257d29da5395b09c93c0"
+2023-09-21T14:33:47.7432241Z       }
+2023-09-21T14:33:47.7432630Z     ],
+2023-09-21T14:33:47.7432864Z     "verification": {
+2023-09-21T14:33:47.7433129Z       "verified": false,
+2023-09-21T14:33:47.7433399Z       "reason": "unsigned",
+2023-09-21T14:33:47.7433707Z       "signature": null,
+2023-09-21T14:33:47.7434215Z       "payload": null
+2023-09-21T14:33:47.7434486Z     }
+2023-09-21T14:33:47.7434698Z   }
+2023-09-21T14:33:47.7434909Z }
+2023-09-21T14:34:19.0503076Z   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+2023-09-21T14:34:19.0504133Z                                  Dload  Upload   Total   Spent    Left  Speed
+2023-09-21T14:34:19.0504613Z 
+2023-09-21T14:34:19.5187557Z   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+2023-09-21T14:34:19.5189613Z {"ref":"refs/heads/release/prod","node_id":"REF_kwDOKWhlOLdyZWZzL2hlYWRzL3JlbGVhc2UvcHJvZA","url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/refs/heads/release/prod","object":{"sha":"4201305a7c7dc2135592836f2aa5237f77d253e8","type":"commit","url":"https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/commits/4201305a7c7dc2135592836f2aa5237f77d253e8"}}{
+2023-09-21T14:34:19.5191419Z   "content": {
+2023-09-21T14:34:19.5191840Z     "name": "CODEOWNERS",
+2023-09-21T14:34:19.5192214Z     "path": "CODEOWNERS",
+2023-09-21T14:34:19.5193027Z     "sha": "707476204bded06d65d456fb8078e69db4d49633",
+2023-09-21T14:34:19.5193361Z     "size": 681,
+2023-09-21T14:34:19.5194208Z     "url": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/contents/CODEOWNERS?ref=release/prod",
+2023-09-21T14:34:19.5195063Z     "html_url": "https://github.com/AlightEngineering/adl-wealth-dcresearch-etl/blob/release/prod/CODEOWNERS",
+2023-09-21T14:34:19.5195965Z     "git_url": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/blobs/707476204bded06d65d456fb8078e69db4d49633",
+2023-09-21T14:34:19.5197120Z     "download_url": "https://raw.githubusercontent.com/AlightEngineering/adl-wealth-dcresearch-etl/release/prod/CODEOWNERS?token=A2XFGB5BIXX7LLXQHWGXGV3FBRKKO",
+2023-09-21T14:34:19.5197836Z     "type": "file",
+2023-09-21T14:34:19.5198161Z     "_links": {
+2023-09-21T14:34:19.5198782Z       "self": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/contents/CODEOWNERS?ref=release/prod",
+2023-09-21T14:34:19.5199656Z       "git": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/blobs/707476204bded06d65d456fb8078e69db4d49633",
+2023-09-21T14:34:19.5200992Z       "html": "https://github.com/AlightEngineering/adl-wealth-dcresearch-etl/blob/release/prod/CODEOWNERS"
+2023-09-21T14:34:19.5201637Z     }
+2023-09-21T14:34:19.5202062Z   },
+2023-09-21T14:34:19.5202611Z   "commit": {
+2023-09-21T14:34:19.5203147Z     "sha": "dedfa3dd3e0cea3c3a80af018533e4845b78f151",
+2023-09-21T14:34:19.5203894Z     "node_id": "C_kwDOKWhlONoAKGRlZGZhM2RkM2UwY2VhM2MzYTgwYWYwMTg1MzNlNDg0NWI3OGYxNTE",
+2023-09-21T14:34:19.5204876Z     "url": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/commits/dedfa3dd3e0cea3c3a80af018533e4845b78f151",
+2023-09-21T14:34:19.5205805Z     "html_url": "https://github.com/AlightEngineering/adl-wealth-dcresearch-etl/commit/dedfa3dd3e0cea3c3a80af018533e4845b78f151",
+2023-09-21T14:34:19.5206364Z     "author": {
+2023-09-21T14:34:19.5206827Z       "name": "David Madison",
+2023-09-21T14:34:19.5207379Z       "email": "david.madison@alight.com",
+2023-09-21T14:34:19.5207783Z       "date": "2023-09-21T14:34:19Z"
+2023-09-21T14:34:19.5208114Z     },
+2023-09-21T14:34:19.5208526Z     "committer": {
+2023-09-21T14:34:19.5208874Z       "name": "David Madison",
+2023-09-21T14:34:19.5211201Z       "email": "david.madison@alight.com",
+2023-09-21T14:34:19.5211641Z       "date": "2023-09-21T14:34:19Z"
+2023-09-21T14:34:19.5212005Z     },
+2023-09-21T14:34:19.5212456Z     "tree": {
+2023-09-21T14:34:19.5212840Z       "sha": "aec7026505b52bbd6d05e5bf7c77c022c0769d6b",
+2023-09-21T14:34:19.5213613Z       "url": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/trees/aec7026505b52bbd6d05e5bf7c77c022c0769d6b"
+2023-09-21T14:34:19.5214333Z     },
+2023-09-21T14:34:19.5214781Z     "message": "Updates CODEOWNERS file on release/prod branch",
+2023-09-21T14:34:19.5215502Z     "parents": [
+2023-09-21T14:34:19.5215881Z       {
+2023-09-21T14:34:19.5216256Z         "sha": "4201305a7c7dc2135592836f2aa5237f77d253e8",
+2023-09-21T14:34:19.5217382Z         "url": "https://api.github.com/repos/AlightEngineering/adl-wealth-dcresearch-etl/git/commits/4201305a7c7dc2135592836f2aa5237f77d253e8",
+2023-09-21T14:34:19.5218397Z         "html_url": "https://github.com/AlightEngineering/adl-wealth-dcresearch-etl/commit/4201305a7c7dc2135592836f2aa5237f77d253e8"
+2023-09-21T14:34:19.5218905Z       }
+2023-09-21T14:34:19.5219231Z     ],
+2023-09-21T14:34:19.5219753Z     "verification": {
+2023-09-21T14:34:19.5220391Z       "verified": false,
+2023-09-21T14:34:19.5220722Z       "reason": "unsigned",
+2023-09-21T14:34:19.5221090Z       "signature": null,
+2023-09-21T14:34:19.5221450Z       "payload": null
+2023-09-21T14:34:19.5222257Z 100  3720  100  2591  100  1129   5516   2403 --:--:-- --:--:-- --:--:--  7948
+2023-09-21T14:34:19.5222654Z     }
+2023-09-21T14:34:19.5222898Z   }
+2023-09-21T14:34:19.5298118Z }
+2023-09-21T14:34:39.5580349Z Cleaning up orphan processes
