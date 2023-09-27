@@ -303,3 +303,10 @@ jobs:
       branch-secret: ${{ secrets.GH_CLONE_REPO }}
     needs:
       update-release-qc-branch-permissions
+
+
+CODEOWNERS @david-madison-alight @AlightEngineering/adl-core-admins
+docs/CODEOWNERS @david-madison-alight @AlightEngineering/adl-core-admins
+.github/CODEOWNERS @david-madison-alight @AlightEngineering/adl-core-admins
+.gitignore @david-madison-alight @AlightEngineering/adl-core-admins
+.group @david-madison-alight @AlightEngineering/adl-core-admins
