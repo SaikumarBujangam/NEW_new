@@ -1,30 +1,62 @@
-versioned_calling_repo_base_name=$***calling_repo_name***-$***cicd_version***
-  versioned_calling_repo_base_name=$***calling_repo_name***-$***cicd_version***
-  event_repo_base_name=$***event_repo_name##*/***
-  source $***versioned_calling_repo_base_name***/scripts/.mdshrc
-  mdsh_init $***event_repo_branch*** local adl $***event_repo_base_name*** localhost
-  git config --global user.email "david.madison@alight.com"
-  git config --global user.name "David Madison"
-  if [[ "$***mdsh_env***" = "dev" ]]
-  then
-    bump_version patch $***event_repo_base_name***
-    git -C $***event_repo_base_name*** add .version
-    git -C $***event_repo_base_name*** commit -m "Increments Version"
-    git -C $***event_repo_base_name*** push
-  fi
-  new_git_tag=$(version $***event_repo_base_name***)
-  gtag_version $***event_repo_base_name*** $***mdsh_env*** $***new_git_tag*** "CICD Pipeline Merge To $***event_repo_branch***"
-  shell: /usr/bin/bash -e ***0***
-  env:
-    event_repo_name: AlightEngineering/adl-adldataops-datarules
-    cicd_version: r1.0.252
-    event_repo_branch: master
-    calling_repo_name: AlightEngineering/adl-awsdeploy-cicd
-    dispatch_repo_name: adl-awsdeploy-cicd
-[master a7afdd3] Increments Version
- 1 file changed, 1 insertion(+), 1 deletion(-)
-remote: error: GH006: Protected branch update failed for refs/heads/master.        
-remote: error: Changes must be made through a pull request.        
-To https://github.com/AlightEngineering/adl-adldataops-datarules.git
- ! [remote rejected] master -> master (protected branch hook declined)
-error: failed to push some refs to 'https://github.com/AlightEngineering/adl-adldataops-datarules.git'
+
+name: ADL Create With Update Team
+on:
+  workflow_dispatch:
+   inputs:
+     org-name:
+       description: 'Organization'
+       required: true
+       type: string
+       default: 'AlightEngineering'
+     development-team-name:
+       description: 'Development team name'
+       required: true
+       type: string
+       default: 'no-team-provided'
+     member-name-list:
+       description: 'GitHub names of team members'
+       required: true
+       type: array
+       default: ''
+jobs:
+  adl-add-members:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Create ADL Team
+      env:
+        GH_TOKEN: ${{ secrets.GH_CLONE_REPO }}
+      run: |
+        if [[ ${{ inputs.development-team-name }} = "no-team-provided" ]]
+        then
+          echo "Please specify group"
+          exit 1
+        fi
+        echo ${{ inputs.org-name }}
+        echo ${{ inputs.development-team-name }}
+        echo ${{ inputs.member-name-list }}
+        gh api --method POST  -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /orgs/${{ inputs.org-name }}/teams -f name=${{ inputs.development-team-name }} -f permission='push' -f privacy='closed' || true
+    - name: Sleep After Create Team
+      run: |
+        # There is a lag between creating a team and having that team be available to other gh api calls -- its a github thing...
+        echo "Sleeping for 120 seconds..."
+        sleep 120
+        echo "Waking up..."
+    - name: Add Members To Team
+      env:
+        GH_TOKEN: ${{ secrets.GH_CLONE_REPO }}
+      run: |
+        for member_name in ${{ inputs.member-name-list }}
+        do
+          echo "Executing gh api call on: /org/${{ inputs.org-name }}/teams/${{ inputs.development-team-name }}/memberships/${member_name}"
+          gh api --method PUT -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /orgs/${{ inputs.org-name }}/teams/${{ inputs.development-team-name }}/memberships/${member_name} -f role='member' || true
+          #gh api --method PUT -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /orgs/${{ inputs.org-name }}/teams/${{ inputs.development-team-name }}/memberships/${member_name} -f role='maintainer'
+        done
+        gh api --method PUT -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /orgs/${{ inputs.org-name }}/teams/${{ inputs.development-team-name }}/memberships/dushyant-remivasan-alight -f role='maintainer'
+
+
+
+Executing gh api call on: /org/AlightEngineering/teams/adl-adldataops-developers/memberships/dinesh-sadasivam-alight
+gh: You must be an organization owner or team maintainer to add a team membership. (HTTP 403)
+gh: You must be an organization owner or team maintainer to add a team membership. (HTTP 403)
+{"message":"You must be an organization owner or team maintainer to add a team membership.","documentation_url":"https://docs.github.com/rest/teams/members#add-or-update-team-membership-for-a-user"}{"message":"You must be an organization owner or team maintainer to add a team membership.","documentation_url":"https://docs.github.com/rest/teams/members#add-or-update-team-membership-for-a-user"}
+Error: Process completed with exit code 1.
