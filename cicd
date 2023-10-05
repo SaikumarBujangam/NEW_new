@@ -1,62 +1,79 @@
 
-name: ADL Create With Update Team
-on:
-  workflow_dispatch:
-   inputs:
-     org-name:
-       description: 'Organization'
-       required: true
-       type: string
-       default: 'AlightEngineering'
-     development-team-name:
-       description: 'Development team name'
-       required: true
-       type: string
-       default: 'no-team-provided'
-     member-name-list:
-       description: 'GitHub names of team members'
-       required: true
-       type: array
-       default: ''
-jobs:
-  adl-add-members:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Create ADL Team
-      env:
-        GH_TOKEN: ${{ secrets.GH_CLONE_REPO }}
-      run: |
-        if [[ ${{ inputs.development-team-name }} = "no-team-provided" ]]
+
+#!/bin/bash
+chown adl_dev_all_mig_svc:adl_all_mig /apps/dataproduct/health
+chmod 755 /apps/dataproduct/health
+chown -R adl_dev_all_mig_svc:adl_all_mig /apps/dataproduct/health/adl-health-cba-etl
+sudo -i -u adl_dev_all_mig_svc mkdir /apps/dataproduct/health/adl-health-cba-etl/1.0.12
+sudo -i -u adl_dev_all_mig_svc mkdir -p /apps/dataproduct/health/adl-health-cba-etl/land/stage
+sudo -i -u adl_dev_all_mig_svc tar -xvf /apps/dataproduct/health/adl-health-cba-etl/land/adl-health-cba-etl-1.0.12.tar --directory /apps/dataproduct/health/adl-health-cba-etl/land/stage
+AUTO_INFLATE_FLAG=True
+if [[ ${AUTO_INFLATE_FLAG} != "True" ]]
+then
+  exit 0
+else
+  cd /apps/dataproduct/health/adl-health-cba-etl/land/stage
+  # CI/CD should not create the top-level directories, this needs to be done at EC2 provisioning time.
+  if [[ -d "/apps/edh/prod" && -d "/apps/ben" ]]
+  then
+      for install_path in $(find . -type f)
+      do
+        # Separate the TAR entry into its file name and file path parts.
+        install_file=$(echo ${install_path##*/})
+        install_directory=$(echo ${install_path%/*} | cut -c3- )
+        # Create the subdirectory where the file will be copied. Create all required
+        # parent directories, and exit if there is an error in directory creation
+        # create the directories as the migration id, NOT as root, which yields a default 755 permission set.
+        sudo -i -u adl_dev_all_mig_svc mkdir -p /apps/${install_directory}
+        if [[ $? -ne "0" ]]
         then
-          echo "Please specify group"
+          echo "Could not create directory: /apps/${install_directory}"
           exit 1
         fi
-        echo ${{ inputs.org-name }}
-        echo ${{ inputs.development-team-name }}
-        echo ${{ inputs.member-name-list }}
-        gh api --method POST  -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /orgs/${{ inputs.org-name }}/teams -f name=${{ inputs.development-team-name }} -f permission='push' -f privacy='closed' || true
-    - name: Sleep After Create Team
-      run: |
-        # There is a lag between creating a team and having that team be available to other gh api calls -- its a github thing...
-        echo "Sleeping for 120 seconds..."
-        sleep 120
-        echo "Waking up..."
-    - name: Add Members To Team
-      env:
-        GH_TOKEN: ${{ secrets.GH_CLONE_REPO }}
-      run: |
-        for member_name in ${{ inputs.member-name-list }}
+	update_grp_dir="/apps"
+        # Split the created directory into its distinct directory parts, as
+        # as each of these nested directories will need to have its
+        # group updated to the migration id's group. By default the group is not the correct migration id's group.
+        for subdir in $(echo ${install_directory} | tr "/" " ")
         do
-          echo "Executing gh api call on: /org/${{ inputs.org-name }}/teams/${{ inputs.development-team-name }}/memberships/${member_name}"
-          gh api --method PUT -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /orgs/${{ inputs.org-name }}/teams/${{ inputs.development-team-name }}/memberships/${member_name} -f role='member' || true
-          #gh api --method PUT -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /orgs/${{ inputs.org-name }}/teams/${{ inputs.development-team-name }}/memberships/${member_name} -f role='maintainer'
+          if [[ ${update_grp_dir} == "" ]]
+          then
+            update_grp_dir=${subdir}
+          else
+            update_grp_dir=${update_grp_dir}/${subdir}
+          fi
+          # Skip if the directory part is one of the base directories.
+          if [[ ${update_grp_dir} == "/apps" || ${update_grp_dir} == "/apps/edh" || ${update_grp_dir} == "/apps/edh/prod" || ${update_grp_dir} == "/apps/ben" ]]
+          then
+            echo "Base Directories, no action"
+          else
+            chgrp adl_all_mig ${update_grp_dir}
+            if [[ $? -ne "0" ]]
+            then
+              echo "Could not chgrp to: adl_all_mig on ${update_grp_dir}"
+              exit 1
+            fi
+          fi
         done
-        gh api --method PUT -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /orgs/${{ inputs.org-name }}/teams/${{ inputs.development-team-name }}/memberships/dushyant-remivasan-alight -f role='maintainer'
 
-
-
-Executing gh api call on: /org/AlightEngineering/teams/adl-adldataops-developers/memberships/dinesh-sadasivam-alight
-gh: You must be an organization owner or team maintainer to add a team membership. (HTTP 403)
-gh: You must be an organization owner or team maintainer to add a team membership. (HTTP 403)
-{"message":"You must be an organization owner or team maintainer to add a team membership.","documentation_url":"https://docs.github.com/rest/teams/members#add-or-update-team-membership-for-a-user"}{"message":"You must be an organization owner or team maintainer to add a team membership.","documentation_url":"https://docs.github.com/rest/teams/members#add-or-update-team-membership-for-a-user"}
-Error: Process completed with exit code 1.
+        # Copy the file into its target directory, update the group on the new file.
+        sudo -i -u adl_dev_all_mig_svc cp /apps/dataproduct/health/adl-health-cba-etl/land/stage/${install_directory}/${install_file} /apps/${install_directory}/${install_file} && \
+          chgrp adl_all_mig /apps/${install_directory}/${install_file}
+        if [[ $? -ne "0" ]]
+        then
+          echo "Could not write file to: /apps/${install_directory}/${install_file}"
+          exit 1
+        fi
+        # If the target directory contains either bin or scripts, make the copied file executable
+        if [[ ${install_path} == *"bin/"* || ${install_path} == *"scripts/"* ]]
+        then
+          sudo -i -u adl_dev_all_mig_svc chmod +x /apps/${install_directory}/${install_file}
+        fi
+      done
+      cd /apps/dataproduct/health/adl-health-cba-etl/land
+      rm -rf stage
+  else
+    echo "Error: Required top level directories, /apps and /apps/edh/prod, do not exist. Please review the setup of the instance on which this deployment was attemmpted."
+    exit 1
+  fi
+fi
