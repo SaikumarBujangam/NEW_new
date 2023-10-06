@@ -1,79 +1,152 @@
-
-
-#!/bin/bash
-chown adl_dev_all_mig_svc:adl_all_mig /apps/dataproduct/health
-chmod 755 /apps/dataproduct/health
-chown -R adl_dev_all_mig_svc:adl_all_mig /apps/dataproduct/health/adl-health-cba-etl
-sudo -i -u adl_dev_all_mig_svc mkdir /apps/dataproduct/health/adl-health-cba-etl/1.0.12
-sudo -i -u adl_dev_all_mig_svc mkdir -p /apps/dataproduct/health/adl-health-cba-etl/land/stage
-sudo -i -u adl_dev_all_mig_svc tar -xvf /apps/dataproduct/health/adl-health-cba-etl/land/adl-health-cba-etl-1.0.12.tar --directory /apps/dataproduct/health/adl-health-cba-etl/land/stage
-AUTO_INFLATE_FLAG=True
-if [[ ${AUTO_INFLATE_FLAG} != "True" ]]
-then
-  exit 0
-else
-  cd /apps/dataproduct/health/adl-health-cba-etl/land/stage
-  # CI/CD should not create the top-level directories, this needs to be done at EC2 provisioning time.
-  if [[ -d "/apps/edh/prod" && -d "/apps/ben" ]]
-  then
-      for install_path in $(find . -type f)
-      do
-        # Separate the TAR entry into its file name and file path parts.
-        install_file=$(echo ${install_path##*/})
-        install_directory=$(echo ${install_path%/*} | cut -c3- )
-        # Create the subdirectory where the file will be copied. Create all required
-        # parent directories, and exit if there is an error in directory creation
-        # create the directories as the migration id, NOT as root, which yields a default 755 permission set.
-        sudo -i -u adl_dev_all_mig_svc mkdir -p /apps/${install_directory}
-        if [[ $? -ne "0" ]]
-        then
-          echo "Could not create directory: /apps/${install_directory}"
-          exit 1
-        fi
-	update_grp_dir="/apps"
-        # Split the created directory into its distinct directory parts, as
-        # as each of these nested directories will need to have its
-        # group updated to the migration id's group. By default the group is not the correct migration id's group.
-        for subdir in $(echo ${install_directory} | tr "/" " ")
-        do
-          if [[ ${update_grp_dir} == "" ]]
-          then
-            update_grp_dir=${subdir}
-          else
-            update_grp_dir=${update_grp_dir}/${subdir}
-          fi
-          # Skip if the directory part is one of the base directories.
-          if [[ ${update_grp_dir} == "/apps" || ${update_grp_dir} == "/apps/edh" || ${update_grp_dir} == "/apps/edh/prod" || ${update_grp_dir} == "/apps/ben" ]]
-          then
-            echo "Base Directories, no action"
-          else
-            chgrp adl_all_mig ${update_grp_dir}
-            if [[ $? -ne "0" ]]
-            then
-              echo "Could not chgrp to: adl_all_mig on ${update_grp_dir}"
-              exit 1
-            fi
-          fi
-        done
-
-        # Copy the file into its target directory, update the group on the new file.
-        sudo -i -u adl_dev_all_mig_svc cp /apps/dataproduct/health/adl-health-cba-etl/land/stage/${install_directory}/${install_file} /apps/${install_directory}/${install_file} && \
-          chgrp adl_all_mig /apps/${install_directory}/${install_file}
-        if [[ $? -ne "0" ]]
-        then
-          echo "Could not write file to: /apps/${install_directory}/${install_file}"
-          exit 1
-        fi
-        # If the target directory contains either bin or scripts, make the copied file executable
-        if [[ ${install_path} == *"bin/"* || ${install_path} == *"scripts/"* ]]
-        then
-          sudo -i -u adl_dev_all_mig_svc chmod +x /apps/${install_directory}/${install_file}
-        fi
-      done
-      cd /apps/dataproduct/health/adl-health-cba-etl/land
-      rm -rf stage
-  else
-    echo "Error: Required top level directories, /apps and /apps/edh/prod, do not exist. Please review the setup of the instance on which this deployment was attemmpted."
-    exit 1
-  fi
-fi
+edh/prod/raw/cba/bin/load_raw_CBA_TRANSACTIONDETAIL.sh
+edh/prod/raw/cba/bin/load_raw_CBA_PAYSITES.sh
+edh/prod/raw/cba/bin/load_raw_CBA_PARTNER.sh
+edh/prod/raw/cba/bin/load_raw_CBA_EMPLOYEE.sh
+edh/prod/raw/cba/bin/load_raw_CBA_TBL_PSRUNS.sh
+edh/prod/raw/cba/bin/load_raw_CBA_EEDEPENDENTLINK.sh
+edh/prod/raw/cba/bin/load_edh_cba_mapping.jar
+edh/prod/raw/cba/bin/load_raw_CBA_WELLNESSPROGRAM.sh
+edh/prod/raw/cba/bin/load_raw_cba_data_load.sh
+edh/prod/raw/cba/bin/load_edh_cba_mapping_2.scala
+edh/prod/raw/cba/bin/load_raw_CBA_METALLICLEVELGROUP.sh
+edh/prod/raw/cba/bin/load_raw_CBA_EMPLOYEE_CBA.sh
+edh/prod/raw/cba/bin/load_raw_CBA_RATESDETAILSHEALTH.sh
+edh/prod/raw/cba/bin/load_raw_CBA_EMPLOYER.sh
+edh/prod/raw/cba/bin/load_raw_CBA_TIERS.sh
+edh/prod/raw/cba/bin/load_raw_CBA_PAYSITECALENDAR.sh
+edh/prod/raw/cba/bin/load_edh_cba_mapping.sh
+edh/prod/raw/cba/bin/load_raw_CBA_SAFEUSERFIELDDATASAFEUSER.sh
+edh/prod/raw/cba/bin/HPERDHMCBALRAW.sh
+edh/prod/raw/cba/bin/load_raw_CBA_PERSON_EMPLOYEE_MAPPING_1.scala
+edh/prod/raw/cba/bin/load_raw_CBA_SYSTEMENDPOINTROLE.sh
+edh/prod/raw/cba/bin/load_raw_cba_data_load.scala
+edh/prod/raw/cba/bin/load_raw_CBA_WELLNESSPROGRAMSELECTIONLIST.sh
+edh/prod/raw/cba/bin/load_raw_CBA_SSO_HEWITTCLIENTMAPPING.sh
+edh/prod/raw/cba/bin/load_raw_CBA_PLANSUBTYPE.sh
+edh/prod/raw/cba/bin/load_edh_cba_mapping_1.scala
+edh/prod/raw/cba/bin/HPERDHMCBALSTGP.sh
+edh/prod/raw/cba/bin/HPERDHMCBALSTGY.sh
+edh/prod/raw/cba/bin/load_raw_CBA_SYSTEMENDPOINTROLESAFEUSERDOMAIN.sh
+edh/prod/raw/cba/bin/load_raw_CBA_PLANOPTION.sh
+edh/prod/raw/cba/bin/load_raw_CBA_TIERDESCRIPTIONOVERRIDE.sh
+edh/prod/raw/cba/bin/load_raw_CBA_SURCHARGEELECTION.sh
+edh/prod/raw/cba/bin/load_raw_CBA_VDEPENDENT.sh
+edh/prod/raw/cba/bin/load_raw_CBA_PLANTIERS.sh
+edh/prod/raw/cba/bin/HPERDHMCBALSTGX.sh
+edh/prod/raw/cba/bin/load_raw_CBA_PLANS.sh
+edh/prod/raw/cba/bin/load_raw_CBA_SAFEUSER.sh
+edh/prod/raw/cba/bin/load_raw_CBA_SSO_HEWITTCLIENTMAPPING_CBA.sh
+edh/prod/raw/cba/bin/load_raw_CBA_EMPLOYER_CBA.sh
+edh/prod/raw/cba/bin/load_raw_CBA_DETECTEVENTS.sh
+edh/prod/raw/cba/bin/HPERDHMCBALSTGW.sh
+edh/prod/raw/cba/bin/load_raw_CBA_PERSON.sh
+edh/prod/raw/cba/bin/load_raw_CBA_PERSON_CBA.sh
+edh/prod/raw/cba/bin/load_raw_CBA_PLANSUMMARY.sh
+edh/prod/raw/cba/bin/HPERDHMCBAMPNG.sh
+edh/prod/raw/cba/bin/CBA_stage_wrapper.sh
+edh/prod/raw/cba/bin/load_raw_CBA_PERSON_EMPLOYEE_MAPPING.sh
+edh/prod/raw/cba/bin/load_raw_CBA_WELLNESSPROGRAMSELECTIONLISTCOMPANIONPLAN.sh
+edh/prod/raw/cba/bin/HPERDHMCBAPEMPG.sh
+edh/prod/raw/cba/bin/load_raw_CBA_TBL_BILLING_CACHE.sh
+edh/prod/raw/cba/bin/load_raw_CBA_TBL_BILLINGRULES.sh
+edh/prod/discovery/operational_event/bin/HPEDHMPRMTCBAEXP.sh
+edh/prod/discovery/operational_event/bin/HPEDDHMCBAELECP.sh
+edh/prod/discovery/operational_event/bin/load_edh_discovery_health_election_cba_ae_2.scala
+edh/prod/discovery/operational_event/bin/load_edh_discovery_health_plan_employer_cost_cba_daily_2.scala
+edh/prod/discovery/operational_event/bin/load_edh_staging_cba_person_hm_choice_enroll_merged_dual_delete.sh
+edh/prod/discovery/operational_event/bin/load_edh_reporting_phce_merge_prompt_cba_delete.sh
+edh/prod/discovery/operational_event/bin/HPEDHMPRMTCBASTG.sh
+edh/prod/discovery/operational_event/bin/HPEDDHMCBAPLAN.sh
+edh/prod/discovery/operational_event/bin/load_edh_discovery_health_plan_employer_cost_cba_daily_1.scala
+edh/prod/discovery/operational_event/bin/HPEDHHMERPRCBA.sh
+edh/prod/discovery/operational_event/bin/load_edh_reporting_phce_merge_prompt_cba.sh
+edh/prod/discovery/operational_event/bin/load_edh_discovery_health_election_cba_ae.sh
+edh/prod/discovery/operational_event/bin/load_edh_discovery_health_election_cba_ae.jar
+edh/prod/discovery/operational_event/bin/load_edh_discovery_health_plan_cba.sh
+edh/prod/discovery/operational_event/bin/load_edh_discovery_health_election_cba_ae_1.scala
+edh/prod/discovery/operational_event/bin/load_edh_reporting_phce_merge_prompt_cba_2.scala
+edh/prod/discovery/operational_event/bin/load_edh_reporting_phce_merge_prompt_cba_1.scala
+edh/prod/discovery/operational_event/bin/load_edh_discovery_health_plan_employer_cost_cba_daily.jar
+edh/prod/discovery/operational_event/bin/load_edh_discovery_health_plan_cba_2.scala
+edh/prod/discovery/operational_event/bin/load_edh_discovery_health_plan_cba_1.scala
+edh/prod/discovery/operational_event/bin/load_edh_reporting_phce_merge_prompt_cba.jar
+edh/prod/discovery/operational_event/bin/load_edh_discovery_health_plan_employer_cost_cba_daily.sh
+edh/prod/reporting/ciba/bin/HPEREDHMCBAAEMN.sh
+edh/prod/reporting/ciba/bin/HPEREDHMCBAEXAE.sh
+edh/prod/reporting/ciba/bin/load_edh_reporting_person_hm_choice_enrolled_all_cba_2.scala
+edh/prod/reporting/ciba/bin/load_edh_reporting_prsn_hm_chc_enrl_minidb_cba_export.sh
+edh/prod/reporting/ciba/bin/load_edh_reporting_person_hm_choice_enrolled_all_cba.sh
+edh/prod/reporting/ciba/bin/load_edh_reporting_prsn_postal_addr_dimn_cba.sh
+edh/prod/reporting/ciba/bin/load_edh_reporting_phce_ae_history_cba_1_submit.scala
+edh/prod/reporting/ciba/bin/HPEREDHMCBACLNT.sh
+edh/prod/reporting/ciba/bin/person_postal_address_dimension_export_stg_2.scala
+edh/prod/reporting/ciba/bin/load_edh_reporting_person_hm_choice_enrolled_all_cba.jar
+edh/prod/reporting/ciba/bin/load_edh_reporting_hdh_ae_measures_cba_intra_day_export.sh
+edh/prod/reporting/ciba/bin/person_postal_address_dimension_export_stg_1.scala
+edh/prod/reporting/ciba/bin/load_edh_reporting_person_hm_choice_enrolled_ae_cba_export.sh
+edh/prod/reporting/ciba/bin/HPEREDHMCBAEXSUM.sh
+edh/prod/reporting/ciba/bin/load_edh_reporting_hdh_ae_measure_intra_day_cba.sh
+edh/prod/reporting/ciba/bin/HPEREDHMCBAEXAD.sh
+edh/prod/reporting/ciba/bin/HPEREDHMCBAEXPHC.sh
+edh/prod/reporting/ciba/bin/load_edh_reporting_client_dimn_cba_2.scala
+edh/prod/reporting/ciba/bin/load_edh_reporting_prsn_email_addr_dimn_cba.sh
+edh/prod/reporting/ciba/bin/load_edh_reporting_phce_ae_history_cba_submit.sh
+edh/prod/reporting/ciba/bin/client_export_stg_2.scala
+edh/prod/reporting/ciba/bin/HPEREDHMCBAUSER.sh
+edh/prod/reporting/ciba/bin/HPEREDHMCBAEXEM.sh
+edh/prod/reporting/ciba/bin/load_edh_reporting_prsn_email_addr_dimn_cba_1.scala
+edh/prod/reporting/ciba/bin/HPERDHMPHCEAPCBA.sh
+edh/prod/reporting/ciba/bin/HPRPTCBAEND.sh
+edh/prod/reporting/ciba/bin/HPEREDHMCBAPHCHS.sh
+edh/prod/reporting/ciba/bin/HPREREDHPHCEAE.sh
+edh/prod/reporting/ciba/bin/load_edh_reporting_phce_integrated_cba_replica.sh
+edh/prod/reporting/ciba/bin/load_edh_reporting_client_dimn_cba_1.scala
+edh/prod/reporting/ciba/bin/load_edh_staging_cba_prsn_dimn.sh
+edh/prod/reporting/ciba/bin/load_edh_reporting_person_hm_choice_enrolled_all_hsa_cba_1.scala
+edh/prod/reporting/ciba/bin/client_export_stg.sh
+edh/prod/reporting/ciba/bin/load_edh_staging_cba_prsn_dimn_1.scala
+edh/prod/reporting/ciba/bin/load_edh_reporting_person_hm_choice_enrolled_all_cba_1.scala
+edh/prod/reporting/ciba/bin/load_edh_reporting_cba_user_security.jar
+edh/prod/reporting/ciba/bin/load_edh_reporting_hdh_ae_measure_intra_day_cba.jar
+edh/prod/reporting/ciba/bin/load_edh_reporting_person_dimn_cba_2.scala
+edh/prod/reporting/ciba/bin/load_edh_reporting_cba_summarized_person_hm_choice_enrolled.sh
+edh/prod/reporting/ciba/bin/load_edh_staging_cba_person_hm_choice_enroll_merged.sh
+edh/prod/reporting/ciba/bin/load_edh_reporting_person_dimn_cba.sh
+edh/prod/reporting/ciba/bin/load_edh_reporting_phce_integrated_cba.scala
+edh/prod/reporting/ciba/bin/person_email_address_dimension_export_stg_2.scala
+edh/prod/reporting/ciba/bin/HPERDHMPACHECBN.sh
+edh/prod/reporting/ciba/bin/load_edh_reporting_phce_integrated_all_plan_replica_cba.sh
+edh/prod/reporting/ciba/bin/load_edh_reporting_prsn_postal_addr_dimn_cba_1.scala
+edh/prod/reporting/ciba/bin/load_edh_staging_cba_person_hm_choice_enroll_merged_dual_1.scala
+edh/prod/reporting/ciba/bin/load_edh_reporting_cba_summarized_person_hm_choice_enrolled_1.scala
+edh/prod/reporting/ciba/bin/load_edh_reporting_hdh_ae_measure_intra_day_cba_1.scala
+edh/prod/reporting/ciba/bin/HPERDHMPHCEICBA.sh
+edh/prod/reporting/ciba/bin/load_edh_staging_cba_person_hm_choice_enroll_merged_dual.sh
+edh/prod/reporting/ciba/bin/load_edh_reporting_phce_ae_history_cba_submit.jar
+edh/prod/reporting/ciba/bin/HPEREDHMCBASUMPH.sh
+edh/prod/reporting/ciba/bin/HPEREDHMCBAPHCE.sh
+edh/prod/reporting/ciba/bin/HPEREDHMCBAEXPD.sh
+edh/prod/reporting/ciba/bin/HPEREDHMCBAEXUSR.sh
+edh/prod/reporting/ciba/bin/load_edh_reporting_prsn_postal_addr_dimn_cba_2.scala
+edh/prod/reporting/ciba/bin/load_edh_reporting_cba_user_security_1.scala
+edh/prod/reporting/ciba/bin/load_edh_reporting_phce_integrated_all_plan_cba.sh
+edh/prod/reporting/ciba/bin/person_postal_address_dimension_export_stg.sh
+edh/prod/reporting/ciba/bin/load_edh_reporting_phce_integrated_cba.sh
+edh/prod/reporting/ciba/bin/HPEREDHMCBAPRDM.sh
+edh/prod/reporting/ciba/bin/load_edh_reporting_client_dimn_cba.sh
+edh/prod/reporting/ciba/bin/load_edh_reporting_person_hm_choice_enrolled_all_hsa_cba_2.scala
+edh/prod/reporting/ciba/bin/load_edh_reporting_hdh_ae_measure_intra_day_cba_2.scala
+edh/prod/reporting/ciba/bin/HPEREDHMCBAEXPHD.sh
+edh/prod/reporting/ciba/bin/HPEREDHMCBAEML.sh
+edh/prod/reporting/ciba/bin/HPEREDHMCBAEXCL.sh
+edh/prod/reporting/ciba/bin/load_edh_reporting_person_hm_choice_enrolled_all_hsa_cba.jar
+edh/prod/reporting/ciba/bin/person_email_address_dimension_export_stg.sh
+edh/prod/reporting/ciba/bin/load_edh_reporting_person_dimn_cba_1.scala
+edh/prod/reporting/ciba/bin/load_edh_reporting_person_hm_choice_enrolled_all_hsa_cba.sh
+edh/prod/reporting/ciba/bin/HPEDCBAPHCAEDX.sh
+edh/prod/reporting/ciba/bin/client_export_stg_1.scala
+edh/prod/reporting/ciba/bin/load_edh_reporting_phce_integrated_all_plan_cba.scala
+edh/prod/reporting/ciba/bin/person_email_address_dimension_export_stg_1.scala
+edh/prod/reporting/ciba/bin/load_edh_reporting_prsn_email_addr_dimn_cba_2.scala
+edh/prod/reporting/ciba/bin/load_edh_reporting_cba_user_security.sh
+edh/prod/reporting/ciba/bin/HPEREDHMCBAADD.sh
