@@ -1,3 +1,5 @@
+Based on the discussion in CDP meeting today with Wu and Rahul, these jobs should be deployed at the /apps/dataproduct/<dataproduct>/adl-<dataproduct>-adhoc/bin location e.g. /apps/dataproduct/health/adl-health-adhoc/bin
+
 {# cdp_build_afterinstall.template.txt #}
 
 #!/bin/bash
