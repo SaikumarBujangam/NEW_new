@@ -3,3 +3,18 @@ config-file-name cdp-pkg-build-args.json --template-file-location adl-cases-adho
 -root adl-cases-adhoc --pkg-version 1.0.1 --tar-file-name adl-cases-adhoc --tar-file-location build --cicdvar "DATA_PRODUCT_NAME=${DATA_PRODUCT_NAME}" -
 -cicdvar "APP_SUBJECT_AREA=${APP_SUBJECT_AREA}"
 [2023-10-11 12:12:19,580] [generatetar] [consolelogger] [<module>:24] [INFO]: "Creating Tar file: build\adl-cases-adhoc-1.0.1.tar"
+
+A1086139@DESKTOP-899JC7U MINGW64 /d/Users/A1086139/git_repo/build
+$ tar -xvf *
+edh/prod/adhocjobs/bin/ADHOCCASES1.sh
+edh/prod/adhocjobs/bin/ADHOCCASES2.sh
+edh/prod/adhocjobs/bin/ADHOCCASES3.sh
+edh/prod/adhocjobs/bin/ADHOCCASES4.sh
+edh/prod/adhocjobs/bin/ADHOCCASES5.sh
+edh/prod/adhocjobs/bin/ADHOCCASES6.sh
+dataproduct/$/$/bin/ADHOCCASES1.sh
+dataproduct/$/$/bin/ADHOCCASES2.sh
+dataproduct/$/$/bin/ADHOCCASES3.sh
+dataproduct/$/$/bin/ADHOCCASES4.sh
+dataproduct/$/$/bin/ADHOCCASES5.sh
+dataproduct/$/$/bin/ADHOCCASES6.sh
