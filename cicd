@@ -1,1 +1,34 @@
-pip install --trusted-host pypi.python.org --trusted-host pypi.org --trusted-host files.pythonhosted.org jinja2
+{
+  "files": [
+    {
+      "nested_path_root": "CASES",
+      "file_details": {
+        "source": "apps/edh/prod/adhocjobs/bin",
+        "destination": "edh/prod/adhocjobs/bin"
+      }
+    },
+    {
+      "nested_path_root": "CASES",
+      "file_details": {
+        "source": "apps/edh/prod/adhocjobs/bin",
+        "destination": "dataproduct/${DATA_PRODUCT_NAME}/${APP_SUBJECT_AREA}/bin"
+      }
+    }
+  ]
+}
+
+python adl-awsdeploy-cicd/src/alight/foundation/app/generatetar.py --base-arg-parser-config-file-location adl-awsdeploy-cicd/config --base-arg-parser-config-file-name cdp-pkg-build-args.json --template-file-location adl-cases-adhoc/config --template-file-name cases_adhoc_appspec_template.json --source-root adl-cases-adhoc --pkg-version 1.0.1 --tar-file-name adl-cases-adhoc --tar-file-location build --cicdvar "DATA_PRODUCT_NAME=${DATA_PRODUCT_NAME}" --cicdvar "APP_SUBJECT_AREA=${APP_SUBJECT_AREA}" 
+
+$ tar -xvf *
+edh/prod/adhocjobs/bin/ADHOCCASES1.sh
+edh/prod/adhocjobs/bin/ADHOCCASES2.sh
+edh/prod/adhocjobs/bin/ADHOCCASES3.sh
+edh/prod/adhocjobs/bin/ADHOCCASES4.sh
+edh/prod/adhocjobs/bin/ADHOCCASES5.sh
+edh/prod/adhocjobs/bin/ADHOCCASES6.sh
+dataproduct/$cases/$adl-cases-adhoc/bin/ADHOCCASES1.sh
+dataproduct/$cases/$adl-cases-adhoc/bin/ADHOCCASES2.sh
+dataproduct/$cases/$adl-cases-adhoc/bin/ADHOCCASES3.sh
+dataproduct/$cases/$adl-cases-adhoc/bin/ADHOCCASES4.sh
+dataproduct/$cases/$adl-cases-adhoc/bin/ADHOCCASES5.sh
+dataproduct/$cases/$adl-cases-adhoc/bin/ADHOCCASES6.sh
