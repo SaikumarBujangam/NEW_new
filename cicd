@@ -1,31 +1,17 @@
-LifecycleEvent - AfterInstall
-Script - hookscripts/afterinstall.sh
-[stdout]dataproduct/cases/adl-cases-adhoc/bin/ADHOCCASES6.sh
-[stdout]dataproduct/cases/adl-cases-adhoc/bin/ADHOCCASES1.sh
-[stdout]dataproduct/cases/adl-cases-adhoc/bin/ADHOCCASES4.sh
-[stdout]dataproduct/cases/adl-cases-adhoc/bin/ADHOCCASES2.sh
-[stdout]dataproduct/cases/adl-cases-adhoc/bin/ADHOCCASES3.sh
-[stdout]dataproduct/cases/adl-cases-adhoc/bin/ADHOCCASES5.sh
-[stdout]Base Directories, no action
-[stdout]Base Directories, no action
-[stdout]Base Directories, no action
-[stdout]Base Directories, no action
-[stdout]Base Directories, no action
-[stdout]Base Directories, no action
-[stderr]mkdir: cannot create directory ‘/apps/apps’: Permission denied
-[stdout]Could not create directory: /apps/apps/dataproduct/cases/adl-cases-adhoc/bin
+$ tar -xvf *
+edh/prod/adhocjobs/bin/ADHOCCASES1.sh
+edh/prod/adhocjobs/bin/ADHOCCASES2.sh
+edh/prod/adhocjobs/bin/ADHOCCASES3.sh
+edh/prod/adhocjobs/bin/ADHOCCASES4.sh
+edh/prod/adhocjobs/bin/ADHOCCASES5.sh
+edh/prod/adhocjobs/bin/ADHOCCASES6.sh
+dataproduct/cases/adl-cases-adhoc/bin/ADHOCCASES1.sh
+dataproduct/cases/adl-cases-adhoc/bin/ADHOCCASES2.sh
+dataproduct/cases/adl-cases-adhoc/bin/ADHOCCASES3.sh
+dataproduct/cases/adl-cases-adhoc/bin/ADHOCCASES4.sh
+dataproduct/cases/adl-cases-adhoc/bin/ADHOCCASES5.sh
+dataproduct/cases/adl-cases-adhoc/bin/ADHOCCASES6.sh
 
-{
-  "files": [
-    {
-      "nested_path_root": "CASES",
-      "file_details": {
-        "source": "apps/edh/prod/adhocjobs/bin",
-        "destination": "dataproduct/${DATAPRODUCT_NAME}/adl-${DATAPRODUCT_NAME}-adhoc/bin"
-      }
-    }
-   ]
-  }
 
 
 
